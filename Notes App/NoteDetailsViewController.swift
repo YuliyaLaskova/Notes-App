@@ -8,7 +8,6 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     @IBOutlet var readyButton: UIButton!
 
     @IBOutlet var titleTextField: UITextField!
@@ -18,14 +17,13 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
-
     }
 
     @IBAction func readyButtonPressed() {
         view.endEditing(true)
     }
 
-  private func setupUI() {
+    private func setupUI() {
         view.backgroundColor = .systemGray6
 
         titleTextField.layer.cornerRadius = 10

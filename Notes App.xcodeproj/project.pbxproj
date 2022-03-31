@@ -77,10 +77,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 8CB27C5B27F1E3FC00B50D70 /* Build configuration list for PBXNativeTarget "Notes App" */;
 			buildPhases = (
+				8C026B3A27F5B8240037E6E8 /* ShellScript */,
 				8CB27C4027F1E3FB00B50D70 /* Sources */,
 				8CB27C4127F1E3FB00B50D70 /* Frameworks */,
 				8CB27C4227F1E3FB00B50D70 /* Resources */,
-				8C026B3A27F5B8240037E6E8 /* ShellScript */,
 			);
 			buildRules = (
 			);
