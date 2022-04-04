@@ -11,6 +11,8 @@ class ViewController: UIViewController {
     let readyBarButtonItem = UIBarButtonItem()
     let titleTextField = UITextField()
     let noteTextView = UITextView()
+    let dateField = UITextField()
+    let datePicker = UIDatePicker()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +22,10 @@ class ViewController: UIViewController {
         setupBarButtonItem()
         setupNoteTextView()
         setupTitleTextField()
+        setupDateField()
+        createDatePicker()
+
+        noteTextView.becomeFirstResponder()
     }
 
     private func setupBarButtonItem() {
@@ -49,16 +55,37 @@ class ViewController: UIViewController {
         ).isActive = true
         titleTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         titleTextField.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        titleTextField.bottomAnchor.constraint(equalTo: noteTextView.topAnchor, constant: -15).isActive = true
+    }
+
+    private func setupDateField() {
+        dateField.backgroundColor = .systemGray5
+        dateField.placeholder = "\(datePicker.date.formatted(date: .long, time: .omitted))"
+        dateField.font = .boldSystemFont(ofSize: 22)
+        dateField.borderStyle = .roundedRect
+
+        view.addSubview(dateField)
+
+        dateField.translatesAutoresizingMaskIntoConstraints = false
+        dateField.trailingAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        dateField.leadingAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        dateField.heightAnchor.constraint(equalTo: titleTextField.heightAnchor).isActive = true
+        dateField.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 5).isActive = true
+        dateField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        dateField.bottomAnchor.constraint(equalTo: noteTextView.topAnchor, constant: -5).isActive = true
     }
 
     private func setupNoteTextView() {
         noteTextView.backgroundColor = .systemGray5
         noteTextView.font = .systemFont(ofSize: 14)
-        noteTextView.layer.cornerRadius = 10
+        noteTextView.layer.cornerRadius = 5
 
         view.addSubview(noteTextView)
-        noteTextView.becomeFirstResponder()
 
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
         noteTextView.trailingAnchor.constraint(
@@ -77,6 +104,47 @@ class ViewController: UIViewController {
     }
 
     @objc private func readyBarButtonAction() {
+        checkNote()
         view.endEditing(true)
+    }
+
+    @objc func checkNote() {
+        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
+            let message = "Enter title or text"
+            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+            alertController.addAction(action)
+
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+
+    private func createDatePicker() {
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
+        dateField.inputView = datePicker
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.datePickerMode = .date
+
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+
+        let doneButton = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: nil,
+            action: #selector (dateDoneBtnPressed)
+        )
+        toolbar.setItems([doneButton], animated: true)
+
+        dateField.inputAccessoryView = toolbar
+    }
+
+    @objc func dateDoneBtnPressed() {
+        if dateField.text?.isEmpty == true {
+            dateField.resignFirstResponder()
+            dateField.text = dateField.placeholder
+        } else {
+            dateField.resignFirstResponder()
+            dateField.text = "\(datePicker.date.formatted(date: .long, time: .omitted))"
+        }
     }
 }
