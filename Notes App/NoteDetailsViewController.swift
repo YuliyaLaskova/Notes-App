@@ -14,6 +14,13 @@ class ViewController: UIViewController {
     let dateField = UITextField()
     let datePicker = UIDatePicker()
 
+    struct NoteDataModel {
+        let noteTitle: String
+        let noteText: String
+        let noteDate: String?
+        let textIsEmpty: Bool
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -37,7 +44,7 @@ class ViewController: UIViewController {
 
     private func setupTitleTextField() {
         titleTextField.backgroundColor = .systemGray5
-        titleTextField.placeholder = "Enter title of the note"
+        titleTextField.placeholder = "Title of the note"
         titleTextField.font = .boldSystemFont(ofSize: 22)
         titleTextField.borderStyle = .roundedRect
 
@@ -108,16 +115,16 @@ class ViewController: UIViewController {
         view.endEditing(true)
     }
 
-    @objc func checkNote() {
-        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
-            let message = "Enter title or text"
-            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(action)
-
-            self.present(alertController, animated: true, completion: nil)
-        }
-    }
+//    @objc func checkNote() {
+//        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
+//            let message = "Enter title or text"
+//            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
+//            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+//            alertController.addAction(action)
+//
+//            self.present(alertController, animated: true, completion: nil)
+//        }
+//    }
 
     private func createDatePicker() {
         datePicker.translatesAutoresizingMaskIntoConstraints = false
@@ -145,6 +152,19 @@ class ViewController: UIViewController {
         } else {
             dateField.resignFirstResponder()
             dateField.text = "\(datePicker.date.formatted(date: .long, time: .omitted))"
+        }
+    }
+}
+
+extension ViewController {
+     func checkNote() {
+        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
+            let message = "Enter title or text"
+            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+            alertController.addAction(action)
+
+            self.present(alertController, animated: true, completion: nil)
         }
     }
 }
