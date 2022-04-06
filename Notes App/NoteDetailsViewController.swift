@@ -114,8 +114,10 @@ class ViewController: UIViewController {
     }
 
     @objc private func readyBarButtonAction() {
-        showAlertOnEmptyText()
-        view.endEditing(true)
+        if isNoteEmpty() {
+            showAlert(with: "Error!", and: "Enter title or text")
+        }
+    view.endEditing(true)
     }
 
     private func createDatePicker() {
@@ -149,14 +151,17 @@ class ViewController: UIViewController {
 }
 
 extension ViewController {
-    func showAlertOnEmptyText() {
-        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
-            let message = "Enter title or text"
-            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
-            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-            alertController.addAction(action)
+    private func showAlert(with title: String, and message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(okAction)
+        self.present(alertController, animated: true, completion: nil)
+    }
 
-            self.present(alertController, animated: true, completion: nil)
+    func isNoteEmpty() -> Bool {
+        if noteTextView.text == "" && titleTextField.text == "" {
+            return true
         }
+        return false
     }
 }
