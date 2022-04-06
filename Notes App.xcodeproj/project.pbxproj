@@ -10,7 +10,6 @@
 		8CB27C4827F1E3FB00B50D70 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB27C4727F1E3FB00B50D70 /* AppDelegate.swift */; };
 		8CB27C4A27F1E3FB00B50D70 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB27C4927F1E3FB00B50D70 /* SceneDelegate.swift */; };
 		8CB27C4C27F1E3FB00B50D70 /* NoteDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CB27C4B27F1E3FB00B50D70 /* NoteDetailsViewController.swift */; };
-		8CB27C4F27F1E3FB00B50D70 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CB27C4D27F1E3FB00B50D70 /* Main.storyboard */; };
 		8CB27C5227F1E3FB00B50D70 /* Notes_App.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8CB27C5027F1E3FB00B50D70 /* Notes_App.xcdatamodeld */; };
 		8CB27C5427F1E3FC00B50D70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CB27C5327F1E3FC00B50D70 /* Assets.xcassets */; };
 		8CB27C5727F1E3FC00B50D70 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CB27C5527F1E3FC00B50D70 /* LaunchScreen.storyboard */; };
@@ -21,7 +20,6 @@
 		8CB27C4727F1E3FB00B50D70 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8CB27C4927F1E3FB00B50D70 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		8CB27C4B27F1E3FB00B50D70 /* NoteDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailsViewController.swift; sourceTree = "<group>"; };
-		8CB27C4E27F1E3FB00B50D70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		8CB27C5127F1E3FB00B50D70 /* Notes_App.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Notes_App.xcdatamodel; sourceTree = "<group>"; };
 		8CB27C5327F1E3FC00B50D70 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8CB27C5627F1E3FC00B50D70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -61,7 +59,6 @@
 				8CB27C4727F1E3FB00B50D70 /* AppDelegate.swift */,
 				8CB27C4927F1E3FB00B50D70 /* SceneDelegate.swift */,
 				8CB27C4B27F1E3FB00B50D70 /* NoteDetailsViewController.swift */,
-				8CB27C4D27F1E3FB00B50D70 /* Main.storyboard */,
 				8CB27C5327F1E3FC00B50D70 /* Assets.xcassets */,
 				8CB27C5527F1E3FC00B50D70 /* LaunchScreen.storyboard */,
 				8CB27C5827F1E3FC00B50D70 /* Info.plist */,
@@ -131,7 +128,6 @@
 			files = (
 				8CB27C5727F1E3FC00B50D70 /* LaunchScreen.storyboard in Resources */,
 				8CB27C5427F1E3FC00B50D70 /* Assets.xcassets in Resources */,
-				8CB27C4F27F1E3FB00B50D70 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,14 +168,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		8CB27C4D27F1E3FB00B50D70 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				8CB27C4E27F1E3FB00B50D70 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		8CB27C5527F1E3FC00B50D70 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -317,7 +305,6 @@
 				INFOPLIST_FILE = "Notes App/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -346,7 +333,6 @@
 				INFOPLIST_FILE = "Notes App/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
