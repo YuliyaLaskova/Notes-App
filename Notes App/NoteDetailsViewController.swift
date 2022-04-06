@@ -18,7 +18,10 @@ class ViewController: UIViewController {
         let noteTitle: String
         let noteText: String
         let noteDate: String?
-        let textIsEmpty: Bool
+
+        var textIsEmpty: Bool {
+            noteTitle == "" && noteText == ""
+        }
     }
 
     override func viewDidLoad() {
@@ -111,20 +114,9 @@ class ViewController: UIViewController {
     }
 
     @objc private func readyBarButtonAction() {
-        checkNote()
+        showAlertOnEmptyText()
         view.endEditing(true)
     }
-
-//    @objc func checkNote() {
-//        if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
-//            let message = "Enter title or text"
-//            let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
-//            let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-//            alertController.addAction(action)
-//
-//            self.present(alertController, animated: true, completion: nil)
-//        }
-//    }
 
     private func createDatePicker() {
         datePicker.translatesAutoresizingMaskIntoConstraints = false
@@ -157,7 +149,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController {
-     func checkNote() {
+    func showAlertOnEmptyText() {
         if noteTextView.text.isEmpty && titleTextField.text?.isEmpty == true {
             let message = "Enter title or text"
             let alertController = UIAlertController(title: "Error!", message: message, preferredStyle: .alert)
