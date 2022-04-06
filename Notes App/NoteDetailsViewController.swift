@@ -157,11 +157,13 @@ extension ViewController {
         alertController.addAction(okAction)
         self.present(alertController, animated: true, completion: nil)
     }
-
     func isNoteEmpty() -> Bool {
-        if noteTextView.text == "" && titleTextField.text == "" {
-            return true
-        }
-        return false
-    }
+            var isNoteTextEmpty: Bool {
+                noteTextView.text == ""
+            }
+            var isNoteTitleEmpty: Bool {
+                titleTextField.text == ""
+            }
+            return isNoteTextEmpty && isNoteTitleEmpty
+         }
 }
