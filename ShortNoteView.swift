@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+// будет использован для отображения полей во вью которые будут в стеквью
 // class ShortNoteView: UIViewController {
 //
 //    init(noteModel: NoteDataModel) {

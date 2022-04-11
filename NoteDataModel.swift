@@ -7,13 +7,13 @@
 
 import UIKit
 
-class NoteDataModel {
+struct NoteDataModel: Codable {
 
-    let noteTitle: String = ""
-    let noteText: String = ""
-    let noteDate: String? = nil
+    let noteTitle: String
+    let noteText: String
+    let noteDate: String?
 
-        var isNoteEmpty: Bool {
-            noteTitle == "" && noteText == ""
-        }
+    var isNoteEmpty: Bool {
+        noteTitle == "" && noteText == ""
     }
+}
