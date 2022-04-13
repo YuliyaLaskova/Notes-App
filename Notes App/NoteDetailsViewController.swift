@@ -13,7 +13,7 @@ import UIKit
 // }
 
 class NoteDetailsViewController: UIViewController {
-    let readyBarButtonItem = UIBarButtonItem()
+    let readyRightBarButtonItem = UIBarButtonItem()
     let titleTextField = UITextField()
     let noteTextView = UITextView()
     let dateField = UITextField()
@@ -22,27 +22,21 @@ class NoteDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemGray6
-
-        setupDateField()
-        setupTitleTextField()
-        setupNoteTextView()
-        setupBarButtonItem()
-        noteTextView.becomeFirstResponder()
+        setupUI()
     }
 
-    private func setupBarButtonItem() {
-        readyBarButtonItem.title = "Готово"
-        navigationItem.rightBarButtonItem = readyBarButtonItem
-        readyBarButtonItem.target = self
-        readyBarButtonItem.action = #selector(readyBarButtonAction)
+    private func setupRightBarButtonItem() {
+        readyRightBarButtonItem.title = "Готово"
+        navigationItem.rightBarButtonItem = readyRightBarButtonItem
+        readyRightBarButtonItem.target = self
+        readyRightBarButtonItem.action = #selector(readyBarButtonAction)
     }
 
     private func setupDateField() {
         dateField.backgroundColor = .systemGray6
         dateField.borderStyle = .none
         dateField.textAlignment = .center
-        dateField.font = .systemFont(ofSize: 14)
+        dateField.font = .systemFont(ofSize: 14, weight: .medium)
         dateField.textColor = .gray
         dateField.text = "\(datePicker.date.formatted(date: .long, time: .omitted))"
         dateField.isUserInteractionEnabled = false
@@ -59,15 +53,14 @@ class NoteDetailsViewController: UIViewController {
             constant: 20
         ).isActive = true
         dateField.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        dateField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 12).isActive = true
+        dateField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -12).isActive = true
     }
 
     private func setupTitleTextField() {
         titleTextField.backgroundColor = .systemGray6
         titleTextField.borderStyle = .none
         titleTextField.placeholder = "Заголовок"
-        titleTextField.font = .boldSystemFont(ofSize: 22)
-
+        titleTextField.font = .systemFont(ofSize: 24, weight: .medium)
         view.addSubview(titleTextField)
 
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -89,6 +82,8 @@ class NoteDetailsViewController: UIViewController {
         noteTextView.layer.cornerRadius = 5
 
         view.addSubview(noteTextView)
+        noteTextView.adjastableForKeyboard()
+        noteTextView.becomeFirstResponder()
 
         noteTextView.translatesAutoresizingMaskIntoConstraints = false
         noteTextView.trailingAnchor.constraint(
@@ -105,17 +100,38 @@ class NoteDetailsViewController: UIViewController {
         ).isActive = true
         noteTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 28).isActive = true
     }
-    // сохранять данные? // каким образом? нужно использовать кор дата или юзердефолтс или ничего?
-    //    func saveViewData() {
-    //        let model = NoteDataModel(noteTitle: titleTextField.text, noteText: noteTextView.text, noteDate: dateField.text)
-    //
+
+    //    func addNewNoteToNotesStackView() {
+    //        let viewNotesArray = [UIView]()
+    //        if !isNoteEmpty() {
+    //            viewNotesArray += NoteDetailsViewController.view
+    //        }
     //    }
 
     @objc private func readyBarButtonAction() {
         if isNoteEmpty() {
             showAlert(with: "Ошибка", and: "Заполните хотя бы одно поле")
         }
+        saveNote()
         view.endEditing(true)
+    }
+
+    private func setupUI() {
+        view.backgroundColor = .systemGray6
+
+        setupDateField()
+        setupTitleTextField()
+        setupNoteTextView()
+        setupRightBarButtonItem()
+    }
+
+    private func saveNote() {
+        let model = NoteDataModel(
+            noteTitle: titleTextField.text ?? "",
+            noteText: noteTextView.text ?? "",
+            noteDate: dateField.text
+        )
+        print(model)
     }
 }
 
@@ -134,5 +150,53 @@ extension NoteDetailsViewController {
             titleTextField.text == ""
         }
         return isNoteTextEmpty && isNoteTitleEmpty
+    }
+}
+
+extension NoteDetailsViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        let newPosition = noteTextView.endOfDocument
+        noteTextView.selectedTextRange = noteTextView.textRange(from: newPosition, to: newPosition)
+        return noteTextView.becomeFirstResponder()
+    }
+}
+
+extension UITextView {
+    func adjastableForKeyboard() {
+        let notificationCenter = NotificationCenter.default
+
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+    }
+    @objc private func adjustForKeyboard(notification: Notification) {
+        guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
+            return
+        }
+        let keyboardScreenEndFrame = keyboardValue.cgRectValue
+        let keyboardViewEndFrame = convert(keyboardScreenEndFrame, from: window)
+
+        if notification.name == UIResponder.keyboardWillHideNotification {
+            contentInset = .zero
+        } else {
+            contentInset = UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: keyboardViewEndFrame.height - safeAreaInsets.bottom,
+                right: 0
+            )
+        }
+
+        scrollIndicatorInsets = contentInset
+        scrollRangeToVisible(selectedRange)
     }
 }
