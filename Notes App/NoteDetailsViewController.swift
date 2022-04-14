@@ -7,10 +7,9 @@
 
 import UIKit
 
-// final class ShortNoteView {
-//    init(noteModel: NoteDataModel) {
-//    }
-// }
+protocol NotesSendingDelegateProtocol: AnyObject {
+    func sendDatatoFirstViewController (note: NoteDataModel) -> ShortCardNoteView
+}
 
 class NoteDetailsViewController: UIViewController {
     let readyRightBarButtonItem = UIBarButtonItem()
@@ -18,11 +17,65 @@ class NoteDetailsViewController: UIViewController {
     let noteTextView = UITextView()
     let dateField = UITextField()
     let datePicker = UIDatePicker()
+   // var notes: [NoteDataModel] = []
+    weak   var delegate: NotesSendingDelegateProtocol?
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        ListViewController().defineNoteCompletionHandler = { model in
+            self.noteTextView.text = model.noteText
+            self.titleTextField.text = model.noteTitle
+            self.dateField.text = model.noteDate
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        notificationSetup()
         setupUI()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if self.isMovingFromParent {
+            let shortCard = NoteDataModel(noteTitle: titleTextField.text, noteText: noteTextView.text, noteDate: dateField.text)
+            self.delegate?.sendDatatoFirstViewController(note: shortCard)
+            print(shortCard)
+        }
+        print("WWPPPPPPP")
+    }
+
+    func notificationSetup() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(keyboardWasShown(notification:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(keyboardWillBeHidden(notification:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    @objc func keyboardWasShown(notification: NSNotification) {
+        navigationItem.rightBarButtonItem?.isEnabled = true
+        navigationItem.rightBarButtonItem?.tintColor = .systemBlue
+        let info = notification.userInfo
+        if let keyboardRect = info?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            let keyboardSize = keyboardRect.size
+            noteTextView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+            noteTextView.scrollIndicatorInsets = noteTextView.contentInset
+        }
+    }
+
+    @objc func keyboardWillBeHidden(notification: NSNotification) {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        navigationItem.rightBarButtonItem?.tintColor = .clear
+        noteTextView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        noteTextView.scrollIndicatorInsets = noteTextView.contentInset
     }
 
     private func setupRightBarButtonItem() {
@@ -100,19 +153,22 @@ class NoteDetailsViewController: UIViewController {
         ).isActive = true
         noteTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 28).isActive = true
     }
-
-    //    func addNewNoteToNotesStackView() {
-    //        let viewNotesArray = [UIView]()
-    //        if !isNoteEmpty() {
-    //            viewNotesArray += NoteDetailsViewController.view
-    //        }
-    //    }
+//
+     private func saveNote(model: NoteDataModel, rootVC: UIViewController) {
+        let model = NoteDataModel(
+            noteTitle: titleTextField.text,
+            noteText: noteTextView.text,
+            noteDate: dateField.text
+        )
+         // Как сохранить в массив
+        print(model)
+    }
 
     @objc private func readyBarButtonAction() {
         if isNoteEmpty() {
             showAlert(with: "Ошибка", and: "Заполните хотя бы одно поле")
         }
-        saveNote()
+       // saveNote(model: <#T##NoteDataModel#>, rootVC: <#T##UIViewController#>)
         view.endEditing(true)
     }
 
@@ -124,16 +180,9 @@ class NoteDetailsViewController: UIViewController {
         setupNoteTextView()
         setupRightBarButtonItem()
     }
-
-    private func saveNote() {
-        let model = NoteDataModel(
-            noteTitle: titleTextField.text ?? "",
-            noteText: noteTextView.text ?? "",
-            noteDate: dateField.text
-        )
-        print(model)
-    }
 }
+
+// MARK: extensions
 
 extension NoteDetailsViewController {
     private func showAlert(with title: String, and message: String) {
@@ -178,6 +227,7 @@ extension UITextView {
             object: nil
         )
     }
+
     @objc private func adjustForKeyboard(notification: Notification) {
         guard let keyboardValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else {
             return

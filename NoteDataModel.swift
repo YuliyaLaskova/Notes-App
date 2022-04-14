@@ -9,8 +9,8 @@ import UIKit
 
 struct NoteDataModel: Codable {
 
-    let noteTitle: String
-    let noteText: String
+    let noteTitle: String?
+    let noteText: String?
     let noteDate: String?
 
     var isNoteEmpty: Bool {
