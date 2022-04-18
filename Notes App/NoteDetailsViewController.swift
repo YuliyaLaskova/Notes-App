@@ -8,7 +8,7 @@
 import UIKit
 
 protocol NotesSendingDelegateProtocol: AnyObject {
-    func sendDatatoFirstViewController(note: NoteDataModel) -> ShortCardNoteView
+    func sendDatatoFirstViewController(note: NoteDataModel)
 }
 
 class NoteDetailsViewController: UIViewController {
@@ -146,21 +146,19 @@ class NoteDetailsViewController: UIViewController {
         ).isActive = true
         noteTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 28).isActive = true
     }
-// переписать функцию для сохранения в базу данных
-//     private func saveNote() {
-//        let model = NoteDataModel(
-//            noteTitle: titleTextField.text,
-//            noteText: noteTextView.text,
-//            noteDate: dateField.text
-//        )
-//    }
 
     @objc private func readyBarButtonAction() {
         view.endEditing(true)
-      //  saveNote()
+        //  saveNote()
         if isNoteEmpty() {
             showAlert(with: "Ошибка", and: "Заполните хотя бы одно поле")
         }
+    }
+
+    func set(note model: NoteDataModel) {
+        titleTextField.text = model.noteTitle
+        noteTextView.text = model.noteText
+        dateField.text = model.noteDate
     }
 
     private func setupUI() {

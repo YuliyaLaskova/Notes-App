@@ -12,11 +12,10 @@ import UIKit
 
 // для таблиц оставить addnewbutton, noteDataModel
 
-class ListViewController: UIViewController, NotesSendingDelegateProtocol {
+class ListViewController: UIViewController {
     let notesScrollView = UIScrollView()
     let notesStackView = UIStackView()
     let addNewNoteButton = UIButton()
-    var notes: [NoteDataModel] = []
     var shortCardViews: [ShortCardNoteView] = []
 
     override func viewDidLoad() {
@@ -26,6 +25,7 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
     }
 
     private func setupNotesScrollView() {
+        // не работает Tap
         notesScrollView.alwaysBounceVertical = true
         view.addSubview(notesScrollView)
 
@@ -46,6 +46,7 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
     }
 
     private  func setupNotesSteakView() {
+        notesStackView.isUserInteractionEnabled = true
         notesScrollView.addSubview(notesStackView)
 
         notesStackView.distribution = .fillProportionally
@@ -74,7 +75,6 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
 //            equalTo: notesScrollView.heightAnchor
 //        ).isActive = true
 
-        // найти как установить констрейнте приоритет и установить 250
     }
 
     private func setupAddNewNoteButton() {
@@ -106,20 +106,6 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         ).isActive = true
     }
 
-    func sendDatatoFirstViewController(note: NoteDataModel) -> ShortCardNoteView {
-        let shortCard = ShortCardNoteView()
-        shortCard.noteNameLabel.text = note.noteTitle
-        shortCard.noteTextLabel.text = note.noteText
-        shortCard.noteDateLabel.text = note.noteDate
-        notes.append(note)
-        shortCard.defineNoteCompletionHandler = { [weak self] in
-            self?.pushExistingNote(note)
-        }
-        shortCardViews.append(shortCard)
-        notesStackView.addArrangedSubview(shortCard)
-        return shortCard
-    }
-
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
         let noteDetailsController = NoteDetailsViewController()
         noteDetailsController.delegate = self
@@ -130,6 +116,7 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         let noteDetailsController = NoteDetailsViewController()
          noteDetailsController.delegate = self
          noteDetailsController.title = ""
+         noteDetailsController.set(note: sender)
         navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 
@@ -143,5 +130,19 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         setupNotesScrollView()
         setupNotesSteakView()
         setupAddNewNoteButton()
+    }
+    private func updateStackView() {
+        notesStackView.arrangedSubviews.forEach({ notesStackView.removeArrangedSubview($0) })
+        shortCardViews.forEach({ notesStackView.addArrangedSubview($0) })
+    }
+}
+
+extension ListViewController: NotesSendingDelegateProtocol {
+    func sendDatatoFirstViewController(note: NoteDataModel) {
+        let shortCard = ShortCardNoteView(note: note) { [weak self] (model) in
+            self?.pushExistingNote(model)
+        }
+        shortCardViews.append(shortCard)
+        updateStackView()
     }
 }

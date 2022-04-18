@@ -20,7 +20,8 @@ import UIKit
 
 final class ShortCardNoteView: UIView {
 
-    var defineNoteCompletionHandler: (() -> Void)?
+    private var defineNoteCompletionHandler: ((NoteDataModel) -> Void)?
+    private var note: NoteDataModel!
 
     lazy var shortCardView: UIView = {
         let shordCard = UIView()
@@ -68,22 +69,33 @@ final class ShortCardNoteView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupShortCardView()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
 
+    convenience init(note: NoteDataModel, completionHandler: ((NoteDataModel) -> Void)?) {
+        self.init(frame: CGRect.zero)
+        self.note = note
+        self.defineNoteCompletionHandler = completionHandler
+        setupShortCardView()
+    }
+
     func setupShortCardView() {
+        self.isUserInteractionEnabled = true
         self.addSubview(shortCardView)
         shortCardView.addSubview(noteNameLabel)
         shortCardView.addSubview(noteTextLabel)
         shortCardView.addSubview(noteDateLabel)
 
+        noteNameLabel.text = note.noteTitle
+        noteTextLabel.text = note.noteText
+        noteDateLabel.text = note.noteDate
+
         shortCardView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
         shortCardView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        //shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
+        // shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
         shortCardView.heightAnchor.constraint(equalToConstant: 90).isActive = true
         shortCardView.widthAnchor.constraint(greaterThanOrEqualToConstant: 358).isActive = true
 
@@ -102,6 +114,6 @@ final class ShortCardNoteView: UIView {
     }
 
     @objc func didTapShortCard() {
-        defineNoteCompletionHandler?()
+        defineNoteCompletionHandler?(note)
     }
 }
