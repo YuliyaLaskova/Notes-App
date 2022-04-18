@@ -8,7 +8,7 @@
 import UIKit
 
 protocol NotesSendingDelegateProtocol: AnyObject {
-    func sendDatatoFirstViewController (note: NoteDataModel) -> ShortCardNoteView
+    func sendDatatoFirstViewController(note: NoteDataModel) -> ShortCardNoteView
 }
 
 class NoteDetailsViewController: UIViewController {
@@ -17,17 +17,8 @@ class NoteDetailsViewController: UIViewController {
     let noteTextView = UITextView()
     let dateField = UITextField()
     let datePicker = UIDatePicker()
-   // var notes: [NoteDataModel] = []
-    weak   var delegate: NotesSendingDelegateProtocol?
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        ListViewController().defineNoteCompletionHandler = { model in
-            self.noteTextView.text = model.noteText
-            self.titleTextField.text = model.noteTitle
-            self.dateField.text = model.noteDate
-        }
-    }
+    weak var delegate: NotesSendingDelegateProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,11 +29,13 @@ class NoteDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if self.isMovingFromParent {
-            let shortCard = NoteDataModel(noteTitle: titleTextField.text, noteText: noteTextView.text, noteDate: dateField.text)
+            let shortCard = NoteDataModel(
+                noteTitle: titleTextField.text,
+                noteText: noteTextView.text,
+                noteDate: dateField.text
+            )
             self.delegate?.sendDatatoFirstViewController(note: shortCard)
-            print(shortCard)
         }
-        print("WWPPPPPPP")
     }
 
     func notificationSetup() {
@@ -153,23 +146,21 @@ class NoteDetailsViewController: UIViewController {
         ).isActive = true
         noteTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 28).isActive = true
     }
-//
-     private func saveNote(model: NoteDataModel, rootVC: UIViewController) {
-        let model = NoteDataModel(
-            noteTitle: titleTextField.text,
-            noteText: noteTextView.text,
-            noteDate: dateField.text
-        )
-         // Как сохранить в массив
-        print(model)
-    }
+// переписать функцию для сохранения в базу данных
+//     private func saveNote() {
+//        let model = NoteDataModel(
+//            noteTitle: titleTextField.text,
+//            noteText: noteTextView.text,
+//            noteDate: dateField.text
+//        )
+//    }
 
     @objc private func readyBarButtonAction() {
+        view.endEditing(true)
+      //  saveNote()
         if isNoteEmpty() {
             showAlert(with: "Ошибка", and: "Заполните хотя бы одно поле")
         }
-       // saveNote(model: <#T##NoteDataModel#>, rootVC: <#T##UIViewController#>)
-        view.endEditing(true)
     }
 
     private func setupUI() {

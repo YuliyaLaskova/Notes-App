@@ -6,11 +6,11 @@
 //
 
 import UIKit
-import CloudKit
 
-// ВЬЮШКИ НЕ СКРОЛЯТСЯ, НАЕЗЖАЮТ ДРУГ НА ДРУГА.
-// КНОПКА СКРЫЛАСЬ НА ЗАДНЕМ ФОНЕ
+// ВЬЮШКИ располагаются не так
 // ПРИ НАЖАТИИ НА КАРТОЧКУ ЗАМЕТКИ СОЗДАЕТСЯ НОВАЯ, А НЕ ОТКРЫВАЕТСЯ СТАРАЯ
+
+// для таблиц оставить addnewbutton, noteDataModel
 
 class ListViewController: UIViewController, NotesSendingDelegateProtocol {
     let notesScrollView = UIScrollView()
@@ -18,19 +18,6 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
     let addNewNoteButton = UIButton()
     var notes: [NoteDataModel] = []
     var shortCardViews: [ShortCardNoteView] = []
-    var defineNoteCompletionHandler: ((NoteDataModel) -> Void)?
-
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let noteDetailsVC = segue.destination as? NoteDetailsViewController else { return }
-        noteDetailsVC.show(NoteDetailsViewController(), sender: addNewNoteButton)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-
-        fillStackView()
-        notesStackView.layoutIfNeeded()
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,9 +26,10 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
     }
 
     private func setupNotesScrollView() {
-        notesScrollView.backgroundColor = .systemGray6
+        notesScrollView.alwaysBounceVertical = true
         view.addSubview(notesScrollView)
 
+        notesScrollView.backgroundColor = .systemGray6
         notesScrollView.translatesAutoresizingMaskIntoConstraints = false
         notesScrollView.leadingAnchor.constraint(
             equalTo: view.leadingAnchor
@@ -50,38 +38,43 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
             equalTo: view.trailingAnchor
         ).isActive = true
         notesScrollView.topAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.topAnchor
+            equalTo: view.topAnchor
         ).isActive = true
         notesScrollView.bottomAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.bottomAnchor
+            equalTo: view.bottomAnchor
         ).isActive = true
     }
 
     private  func setupNotesSteakView() {
-        view.addSubview(notesStackView)
-        notesStackView.backgroundColor = .systemGray6
+        notesScrollView.addSubview(notesStackView)
+
+        notesStackView.distribution = .fillProportionally
         notesStackView.axis = .vertical
-        notesStackView.distribution = .equalCentering
+        notesStackView.alignment = .center
         notesStackView.spacing = 4
+        notesStackView.backgroundColor = .systemGray6
 
         notesStackView.translatesAutoresizingMaskIntoConstraints = false
         notesStackView.leadingAnchor.constraint(
-            equalTo: notesScrollView.leadingAnchor,
-            constant: 20
+            equalTo: notesScrollView.contentLayoutGuide.leadingAnchor
+        ).isActive = true
+        notesStackView.trailingAnchor.constraint(
+            equalTo: notesScrollView.contentLayoutGuide.trailingAnchor
         ).isActive = true
         notesStackView.topAnchor.constraint(
-            equalTo: notesScrollView.topAnchor
+            equalTo: notesScrollView.contentLayoutGuide.topAnchor
         ).isActive = true
         notesStackView.bottomAnchor.constraint(
-            equalTo: notesScrollView.bottomAnchor
+            equalTo: notesScrollView.contentLayoutGuide.bottomAnchor
         ).isActive = true
         notesStackView.widthAnchor.constraint(
-            equalTo: notesScrollView.widthAnchor,
-            constant: -40
+            equalTo: notesScrollView.widthAnchor
         ).isActive = true
-        notesStackView.heightAnchor.constraint(
-            equalTo: notesScrollView.heightAnchor
-        ).isActive = true
+//        notesStackView.heightAnchor.constraint(
+//            equalTo: notesScrollView.heightAnchor
+//        ).isActive = true
+
+        // найти как установить констрейнте приоритет и установить 250
     }
 
     private func setupAddNewNoteButton() {
@@ -92,16 +85,16 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         addNewNoteButton.backgroundColor = .systemBlue
         addNewNoteButton.titleLabel?.font = .systemFont(ofSize: 36)
         addNewNoteButton.titleLabel?.textAlignment = .center
-        addNewNoteButton.focusGroupPriority = .prioritized
+       // addNewNoteButton.focusGroupPriority = .prioritized
 
-        notesStackView.addSubview(addNewNoteButton)
+        view.addSubview(addNewNoteButton)
 
         addNewNoteButton.translatesAutoresizingMaskIntoConstraints = false
         addNewNoteButton.trailingAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20
+            equalTo: view.trailingAnchor, constant: -20
         ).isActive = true
         addNewNoteButton.bottomAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+            equalTo: view.bottomAnchor,
             constant: -60
         ).isActive = true
         addNewNoteButton.widthAnchor.constraint(
@@ -113,48 +106,31 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         ).isActive = true
     }
 
-    func addShortViews(note: NoteDataModel) -> ShortCardNoteView {
-        let shortCard = ShortCardNoteView()
-        shortCard.noteNameLabel.text = note.noteTitle
-        shortCard.noteTextLabel.text = note.noteText
-        shortCard.noteDateLabel.text = note.noteDate
-        notesStackView.addArrangedSubview(shortCard)
-        return shortCard
-    }
-
     func sendDatatoFirstViewController(note: NoteDataModel) -> ShortCardNoteView {
         let shortCard = ShortCardNoteView()
         shortCard.noteNameLabel.text = note.noteTitle
         shortCard.noteTextLabel.text = note.noteText
         shortCard.noteDateLabel.text = note.noteDate
         notes.append(note)
+        shortCard.defineNoteCompletionHandler = { [weak self] in
+            self?.pushExistingNote(note)
+        }
         shortCardViews.append(shortCard)
+        notesStackView.addArrangedSubview(shortCard)
         return shortCard
     }
 
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
         let noteDetailsController = NoteDetailsViewController()
+        noteDetailsController.delegate = self
         navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 
-    func fillStackView () {
-        for shortCard in shortCardViews {
-            shortCard.isUserInteractionEnabled = true
-            notesStackView.addArrangedSubview(shortCard)
-        }
-    }
-
-    @objc func pushExistingNote(_ sender: ShortCardNoteView) {
-        defineNoteCompletionHandler?(NoteDataModel(
-            noteTitle: sender.noteNameLabel.text,
-            noteText: sender.noteTextLabel.text,
-            noteDate: sender.noteDateLabel.text
-        ))
-
-        let noteDetailsVC = NoteDetailsViewController()
-        noteDetailsVC.delegate = self
-        noteDetailsVC.title = ""
-        self.navigationController?.pushViewController(noteDetailsVC, animated: true)
+     func pushExistingNote(_ sender: NoteDataModel) {
+        let noteDetailsController = NoteDetailsViewController()
+         noteDetailsController.delegate = self
+         noteDetailsController.title = ""
+        navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 
     private func setupUI() {
@@ -162,12 +138,7 @@ class ListViewController: UIViewController, NotesSendingDelegateProtocol {
         self.title = "Заметки"
         navigationController?.navigationBar.prefersLargeTitles = true
 
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(pushExistingNote)
-        )
         addNewNoteButton.addTarget(self, action: #selector(addNewNoteButtonPressed), for: .touchUpInside)
-        notesStackView.addGestureRecognizer(tapGesture)
 
         setupNotesScrollView()
         setupNotesSteakView()

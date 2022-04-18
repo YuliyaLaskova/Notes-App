@@ -8,6 +8,10 @@
 import UIKit
 // будет использован для отображения полей во вью которые будут в стеквью
 
+// class ShortNoteView: UIViewController {
+//
+//    init(noteModel: NoteDataModel) {
+
 // final class ShortCardNoteView: UIView {
 //    static func putShortNoteToStack(from model: NoteDataModel) -> NoteDataModel {
 //        return NoteDataModel(noteTitle: model.noteTitle, noteText: model.noteText, noteDate: model.noteDate)
@@ -16,9 +20,9 @@ import UIKit
 
 final class ShortCardNoteView: UIView {
 
-    // let shortCardView = UIView()
+    var defineNoteCompletionHandler: (() -> Void)?
 
-    let shortCardView: UIView = {
+    lazy var shortCardView: UIView = {
         let shordCard = UIView()
         shordCard.backgroundColor = .white
         shordCard.sizeToFit()
@@ -26,7 +30,13 @@ final class ShortCardNoteView: UIView {
         shordCard.layer.cornerRadius = 15
         shordCard.clipsToBounds = true
         shordCard.layer.masksToBounds = true
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapShortCard)
+        )
+        shordCard.addGestureRecognizer(tapGesture)
         shordCard.translatesAutoresizingMaskIntoConstraints = false
+        shordCard.isUserInteractionEnabled = true
         return shordCard
     }()
 
@@ -66,14 +76,14 @@ final class ShortCardNoteView: UIView {
     }
 
     func setupShortCardView() {
-        addSubview(shortCardView)
+        self.addSubview(shortCardView)
         shortCardView.addSubview(noteNameLabel)
         shortCardView.addSubview(noteTextLabel)
         shortCardView.addSubview(noteDateLabel)
 
         shortCardView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
         shortCardView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
+        //shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
         shortCardView.heightAnchor.constraint(equalToConstant: 90).isActive = true
         shortCardView.widthAnchor.constraint(greaterThanOrEqualToConstant: 358).isActive = true
 
@@ -89,5 +99,9 @@ final class ShortCardNoteView: UIView {
         noteDateLabel.topAnchor.constraint(equalTo: noteTextLabel.bottomAnchor, constant: 24).isActive = true
         noteDateLabel.leadingAnchor.constraint(equalTo: shortCardView.leadingAnchor, constant: 16).isActive = true
         noteDateLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
+    }
+
+    @objc func didTapShortCard() {
+        defineNoteCompletionHandler?()
     }
 }
