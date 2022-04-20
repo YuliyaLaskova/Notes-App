@@ -85,10 +85,19 @@ final class ShortCardNoteView: UIView {
         noteTextLabel.text = note.noteText
         noteDateLabel.text = note.noteDate
 
-        shortCardView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        shortCardView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        shortCardView.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        shortCardView.widthAnchor.constraint(greaterThanOrEqualToConstant: 358).isActive = true
+        shortCardView.leadingAnchor.constraint(
+            equalTo: safeAreaLayoutGuide.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        shortCardView.trailingAnchor.constraint(
+            equalTo: safeAreaLayoutGuide.trailingAnchor,
+            constant: -16
+        ).isActive = true
+        shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
+        shortCardView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 26).isActive = true
+        shortCardView.widthAnchor.constraint(
+            greaterThanOrEqualToConstant: 358
+        ).isActive = true
 
         noteNameLabel.topAnchor.constraint(equalTo: shortCardView.topAnchor, constant: 10).isActive = true
         noteNameLabel.leadingAnchor.constraint(equalTo: shortCardView.leadingAnchor, constant: 16).isActive = true

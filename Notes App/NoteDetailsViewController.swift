@@ -12,16 +12,17 @@ protocol NotesSendingDelegateProtocol: AnyObject {
 }
 
 class NoteDetailsViewController: UIViewController {
-    let readyRightBarButtonItem = UIBarButtonItem()
-    let titleTextField = UITextField()
-    let noteTextView = UITextView()
-    let dateField = UITextField()
-    let datePicker = UIDatePicker()
+    private  let readyRightBarButtonItem = UIBarButtonItem()
+    private let titleTextField = UITextField()
+    private let noteTextView = UITextView()
+    private let dateField = UITextField()
+    private let datePicker = UIDatePicker()
 
     weak var delegate: NotesSendingDelegateProtocol?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         notificationSetup()
         setupUI()
     }
@@ -87,12 +88,16 @@ class NoteDetailsViewController: UIViewController {
         dateField.textAlignment = .center
         dateField.font = .systemFont(ofSize: 14, weight: .medium)
         dateField.textColor = .gray
-        dateField.text = "\(datePicker.date.formatted(date: .long, time: .omitted))"
+        dateField.text = formatDate(date: Date())
         dateField.isUserInteractionEnabled = false
 
         view.addSubview(dateField)
 
         dateField.translatesAutoresizingMaskIntoConstraints = false
+        dateField.topAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.topAnchor,
+            constant: 12
+        ).isActive = true
         dateField.trailingAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.trailingAnchor,
             constant: -20
@@ -101,8 +106,9 @@ class NoteDetailsViewController: UIViewController {
             equalTo: view.safeAreaLayoutGuide.leadingAnchor,
             constant: 20
         ).isActive = true
-        dateField.heightAnchor.constraint(equalToConstant: 16).isActive = true
-        dateField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: -12).isActive = true
+        dateField.heightAnchor.constraint(
+            equalToConstant: 16
+        ).isActive = true
     }
 
     private func setupTitleTextField() {
@@ -114,7 +120,10 @@ class NoteDetailsViewController: UIViewController {
         titleTextField.font = .systemFont(ofSize: 24, weight: .medium)
 
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
-        titleTextField.topAnchor.constraint(equalTo: dateField.bottomAnchor, constant: 20).isActive = true
+        titleTextField.topAnchor.constraint(
+            equalTo: dateField.bottomAnchor,
+            constant: 20
+        ).isActive = true
         titleTextField.leadingAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.leadingAnchor,
             constant: 20
@@ -123,13 +132,15 @@ class NoteDetailsViewController: UIViewController {
             equalTo: view.safeAreaLayoutGuide.trailingAnchor,
             constant: -70
         ).isActive = true
-        titleTextField.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        titleTextField.heightAnchor.constraint(
+            equalToConstant: 24
+        ).isActive = true
     }
 
     private func setupNoteTextView() {
         view.addSubview(noteTextView)
         noteTextView.backgroundColor = .systemGray6
-        noteTextView.font = .systemFont(ofSize: 14)
+        noteTextView.font = .systemFont(ofSize: 16)
         noteTextView.layer.cornerRadius = 5
 
         noteTextView.adjastableForKeyboard()
@@ -148,7 +159,10 @@ class NoteDetailsViewController: UIViewController {
             equalTo: view.safeAreaLayoutGuide.bottomAnchor,
             constant: -20
         ).isActive = true
-        noteTextView.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 28).isActive = true
+        noteTextView.topAnchor.constraint(
+            equalTo: titleTextField.bottomAnchor,
+            constant: 28
+        ).isActive = true
     }
 
     @objc private func readyBarButtonAction() {
@@ -173,7 +187,7 @@ class NoteDetailsViewController: UIViewController {
         setupRightBarButtonItem()
     }
 }
-// MARK: extensions
+// MARK: alert extension
 
 extension NoteDetailsViewController {
     private func showAlert(with title: String, and message: String) {
@@ -200,6 +214,8 @@ extension NoteDetailsViewController: UITextFieldDelegate {
         return noteTextView.becomeFirstResponder()
     }
 }
+
+// MARK: Keyboard extension
 
 extension UITextView {
     func adjastableForKeyboard() {
@@ -239,5 +255,16 @@ extension UITextView {
 
         scrollIndicatorInsets = contentInset
         scrollRangeToVisible(selectedRange)
+    }
+}
+
+// MARK: date format extension
+
+extension NoteDetailsViewController {
+    private func formatDate(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ru_RU")
+        formatter.dateFormat = "dd.MM.YYYY EEEE HH:MM"
+        return formatter.string(from: date)
     }
 }

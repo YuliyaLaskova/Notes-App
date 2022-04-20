@@ -9,14 +9,15 @@ import UIKit
 // для таблиц оставить addnewbutton, noteDataModel
 
 class ListViewController: UIViewController {
-   private let notesScrollView = UIScrollView()
-    let notesStackView = UIStackView()
-    let addNewNoteButton = UIButton()
-    var shortCardViews: [ShortCardNoteView] = []
+    private let notesScrollView = UIScrollView()
+    private let notesStackView = UIStackView()
+    private let addNewNoteButton = UIButton()
+    private   var shortCardViews: [ShortCardNoteView] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        navigationItem.title = "Заметки"
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         setupUI()
     }
 
@@ -87,26 +88,23 @@ class ListViewController: UIViewController {
             equalToConstant: 50
         ).isActive = true
     }
-// MARK: Functions and methods
+    // MARK: Functions and methods
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
         let noteDetailsController = NoteDetailsViewController()
         noteDetailsController.delegate = self
         navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 
-     func pushExistingNote(_ sender: NoteDataModel) {
+    func pushExistingNote(_ sender: NoteDataModel) {
         let noteDetailsController = NoteDetailsViewController()
-         noteDetailsController.delegate = self
-         noteDetailsController.title = ""
-         noteDetailsController.set(note: sender)
+        noteDetailsController.delegate = self
+        noteDetailsController.title = ""
+        noteDetailsController.set(note: sender)
         navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 
     private func setupUI() {
         view.backgroundColor = .systemGray6
-        self.title = "Заметки"
-        navigationController?.navigationBar.prefersLargeTitles = true
-
         addNewNoteButton.addTarget(self, action: #selector(addNewNoteButtonPressed), for: .touchUpInside)
 
         setupNotesScrollView()
@@ -119,7 +117,7 @@ class ListViewController: UIViewController {
         shortCardViews.forEach({ notesStackView.addArrangedSubview($0) })
     }
 }
-// MARK: Extensions
+// MARK: Protocol extension
 
 extension ListViewController: NotesSendingDelegateProtocol {
     func sendDatatoFirstViewController(note: NoteDataModel) {
