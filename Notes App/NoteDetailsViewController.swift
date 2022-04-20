@@ -38,6 +38,8 @@ class NoteDetailsViewController: UIViewController {
         }
     }
 
+    // MARK: Keyboard + notification
+
     func notificationSetup() {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(
@@ -53,6 +55,7 @@ class NoteDetailsViewController: UIViewController {
             object: nil
         )
     }
+
     @objc func keyboardWasShown(notification: NSNotification) {
         navigationItem.rightBarButtonItem?.isEnabled = true
         navigationItem.rightBarButtonItem?.tintColor = .systemBlue
@@ -70,7 +73,7 @@ class NoteDetailsViewController: UIViewController {
         noteTextView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         noteTextView.scrollIndicatorInsets = noteTextView.contentInset
     }
-
+    // MARK: Setups
     private func setupRightBarButtonItem() {
         readyRightBarButtonItem.title = "Готово"
         navigationItem.rightBarButtonItem = readyRightBarButtonItem
@@ -103,11 +106,12 @@ class NoteDetailsViewController: UIViewController {
     }
 
     private func setupTitleTextField() {
+        view.addSubview(titleTextField)
+
         titleTextField.backgroundColor = .systemGray6
         titleTextField.borderStyle = .none
         titleTextField.placeholder = "Заголовок"
         titleTextField.font = .systemFont(ofSize: 24, weight: .medium)
-        view.addSubview(titleTextField)
 
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
         titleTextField.topAnchor.constraint(equalTo: dateField.bottomAnchor, constant: 20).isActive = true
@@ -123,11 +127,11 @@ class NoteDetailsViewController: UIViewController {
     }
 
     private func setupNoteTextView() {
+        view.addSubview(noteTextView)
         noteTextView.backgroundColor = .systemGray6
         noteTextView.font = .systemFont(ofSize: 14)
         noteTextView.layer.cornerRadius = 5
 
-        view.addSubview(noteTextView)
         noteTextView.adjastableForKeyboard()
         noteTextView.becomeFirstResponder()
 
@@ -149,7 +153,6 @@ class NoteDetailsViewController: UIViewController {
 
     @objc private func readyBarButtonAction() {
         view.endEditing(true)
-        //  saveNote()
         if isNoteEmpty() {
             showAlert(with: "Ошибка", and: "Заполните хотя бы одно поле")
         }
@@ -170,7 +173,6 @@ class NoteDetailsViewController: UIViewController {
         setupRightBarButtonItem()
     }
 }
-
 // MARK: extensions
 
 extension NoteDetailsViewController {

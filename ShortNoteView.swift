@@ -6,17 +6,6 @@
 //
 
 import UIKit
-// будет использован для отображения полей во вью которые будут в стеквью
-
-// class ShortNoteView: UIViewController {
-//
-//    init(noteModel: NoteDataModel) {
-
-// final class ShortCardNoteView: UIView {
-//    static func putShortNoteToStack(from model: NoteDataModel) -> NoteDataModel {
-//        return NoteDataModel(noteTitle: model.noteTitle, noteText: model.noteText, noteDate: model.noteDate)
-//    }
-// }
 
 final class ShortCardNoteView: UIView {
 
@@ -84,7 +73,10 @@ final class ShortCardNoteView: UIView {
 
     func setupShortCardView() {
         self.isUserInteractionEnabled = true
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.heightAnchor.constraint(equalToConstant: 90).isActive = true
         self.addSubview(shortCardView)
+
         shortCardView.addSubview(noteNameLabel)
         shortCardView.addSubview(noteTextLabel)
         shortCardView.addSubview(noteDateLabel)
@@ -95,7 +87,6 @@ final class ShortCardNoteView: UIView {
 
         shortCardView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
         shortCardView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        // shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
         shortCardView.heightAnchor.constraint(equalToConstant: 90).isActive = true
         shortCardView.widthAnchor.constraint(greaterThanOrEqualToConstant: 358).isActive = true
 
