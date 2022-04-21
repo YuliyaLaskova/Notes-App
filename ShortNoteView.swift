@@ -9,7 +9,7 @@ import UIKit
 
 final class ShortCardNoteView: UIView {
 
-    private var defineNoteCompletionHandler: ((NoteDataModel) -> Void)?
+    private var defineNoteCompletionHandler: ((NoteDataModel, ShortCardNoteView) -> Void)?
     private var note: NoteDataModel!
 
     lazy var shortCardView: UIView = {
@@ -64,7 +64,7 @@ final class ShortCardNoteView: UIView {
         super.init(coder: coder)
     }
 
-    convenience init(note: NoteDataModel, completionHandler: ((NoteDataModel) -> Void)?) {
+    convenience init(note: NoteDataModel, completionHandler: ((NoteDataModel, ShortCardNoteView) -> Void)?) {
         self.init(frame: CGRect.zero)
         self.note = note
         self.defineNoteCompletionHandler = completionHandler
@@ -114,6 +114,13 @@ final class ShortCardNoteView: UIView {
     }
 
     @objc func didTapShortCard() {
-        defineNoteCompletionHandler?(note)
+        defineNoteCompletionHandler?(note, self)
+    }
+
+    func update(with note: NoteDataModel) {
+        self.note = note
+        noteNameLabel.text = note.noteTitle
+        noteTextLabel.text = note.noteText
+        noteDateLabel.text = note.noteDate
     }
 }

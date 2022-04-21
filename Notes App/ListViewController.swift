@@ -12,7 +12,8 @@ class ListViewController: UIViewController {
     private let notesScrollView = UIScrollView()
     private let notesStackView = UIStackView()
     private let addNewNoteButton = UIButton()
-    private   var shortCardViews: [ShortCardNoteView] = []
+    private var shortCardViews: [ShortCardNoteView] = []
+    private var editItem: ShortCardNoteView?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,8 +89,11 @@ class ListViewController: UIViewController {
             equalToConstant: 50
         ).isActive = true
     }
+
     // MARK: Functions and methods
+
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
+        editItem = nil
         let noteDetailsController = NoteDetailsViewController()
         noteDetailsController.delegate = self
         navigationController?.pushViewController(noteDetailsController, animated: true)
@@ -117,14 +121,21 @@ class ListViewController: UIViewController {
         shortCardViews.forEach({ notesStackView.addArrangedSubview($0) })
     }
 }
+
 // MARK: Protocol extension
 
 extension ListViewController: NotesSendingDelegateProtocol {
     func sendDatatoFirstViewController(note: NoteDataModel) {
-        let shortCard = ShortCardNoteView(note: note) { [weak self] (model) in
-            self?.pushExistingNote(model)
+        guard !note.isNoteEmpty else { return }
+        if let editView = editItem {
+            editView.update(with: note)
+        } else {
+            let shortCard = ShortCardNoteView(note: note) { [weak self] (model, current) in
+                self?.pushExistingNote(model)
+                self?.editItem = current
+            }
+            shortCardViews.append(shortCard)
+            updateStackView()
         }
-        shortCardViews.append(shortCard)
-        updateStackView()
     }
 }

@@ -74,7 +74,9 @@ class NoteDetailsViewController: UIViewController {
         noteTextView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         noteTextView.scrollIndicatorInsets = noteTextView.contentInset
     }
+
     // MARK: Setups
+
     private func setupRightBarButtonItem() {
         readyRightBarButtonItem.title = "Готово"
         navigationItem.rightBarButtonItem = readyRightBarButtonItem
@@ -187,6 +189,7 @@ class NoteDetailsViewController: UIViewController {
         setupRightBarButtonItem()
     }
 }
+
 // MARK: alert extension
 
 extension NoteDetailsViewController {
