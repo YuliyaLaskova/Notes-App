@@ -12,7 +12,7 @@ protocol NotesSendingDelegateProtocol: AnyObject {
 }
 
 class NoteDetailsViewController: UIViewController {
-    private  let readyRightBarButtonItem = UIBarButtonItem()
+    private let readyRightBarButtonItem = UIBarButtonItem()
     private let titleTextField = UITextField()
     private let noteTextView = UITextView()
     private let dateField = UITextField()
@@ -118,7 +118,7 @@ class NoteDetailsViewController: UIViewController {
 
         titleTextField.backgroundColor = .systemGray6
         titleTextField.borderStyle = .none
-        titleTextField.placeholder = "Заголовок"
+        titleTextField.placeholder = "Введите название"
         titleTextField.font = .systemFont(ofSize: 24, weight: .medium)
 
         titleTextField.translatesAutoresizingMaskIntoConstraints = false
@@ -267,7 +267,7 @@ extension NoteDetailsViewController {
     private func formatDate(date: Date) -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "dd.MM.YYYY EEEE HH:MM"
+        formatter.dateFormat = "dd.MM.YYYY EEEE HH:mm"
         return formatter.string(from: date)
     }
 }

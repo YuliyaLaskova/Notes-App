@@ -12,24 +12,6 @@ final class ShortCardNoteView: UIView {
     private var defineNoteCompletionHandler: ((NoteDataModel, ShortCardNoteView) -> Void)?
     private var note: NoteDataModel!
 
-    lazy var shortCardView: UIView = {
-        let shordCard = UIView()
-        shordCard.backgroundColor = .white
-        shordCard.sizeToFit()
-        shordCard.layoutIfNeeded()
-        shordCard.layer.cornerRadius = 15
-        shordCard.clipsToBounds = true
-        shordCard.layer.masksToBounds = true
-        let tapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(didTapShortCard)
-        )
-        shordCard.addGestureRecognizer(tapGesture)
-        shordCard.translatesAutoresizingMaskIntoConstraints = false
-        shordCard.isUserInteractionEnabled = true
-        return shordCard
-    }()
-
     let noteNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 16, weight: .bold)
@@ -65,52 +47,61 @@ final class ShortCardNoteView: UIView {
     }
 
     convenience init(note: NoteDataModel, completionHandler: ((NoteDataModel, ShortCardNoteView) -> Void)?) {
-        self.init(frame: CGRect.zero)
-        self.note = note
+        self.init(frame: .zero)
+        backgroundColor = .white
+        layer.cornerRadius = 15
+
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: 90).isActive = true
+        widthAnchor.constraint(equalToConstant: 358).isActive = true
+
         self.defineNoteCompletionHandler = completionHandler
-        setupShortCardView()
-    }
-
-    func setupShortCardView() {
-        self.isUserInteractionEnabled = true
-        self.translatesAutoresizingMaskIntoConstraints = false
-        self.heightAnchor.constraint(equalToConstant: 90).isActive = true
-        self.addSubview(shortCardView)
-
-        shortCardView.addSubview(noteNameLabel)
-        shortCardView.addSubview(noteTextLabel)
-        shortCardView.addSubview(noteDateLabel)
-
+        self.note = note
         noteNameLabel.text = note.noteTitle
         noteTextLabel.text = note.noteText
         noteDateLabel.text = note.noteDate
 
-        shortCardView.leadingAnchor.constraint(
+        setupShortCardView()
+        tapObserver()
+    }
+
+    func setupShortCardView() {
+
+        self.translatesAutoresizingMaskIntoConstraints = false
+        self.isUserInteractionEnabled = true
+        self.addSubview(noteNameLabel)
+        self.addSubview(noteTextLabel)
+        self.addSubview(noteDateLabel)
+
+        self.leadingAnchor.constraint(
             equalTo: safeAreaLayoutGuide.leadingAnchor,
             constant: 16
         ).isActive = true
-        shortCardView.trailingAnchor.constraint(
+        self.trailingAnchor.constraint(
             equalTo: safeAreaLayoutGuide.trailingAnchor,
             constant: -16
         ).isActive = true
-        shortCardView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 26).isActive = true
-        shortCardView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 26).isActive = true
-        shortCardView.widthAnchor.constraint(
-            greaterThanOrEqualToConstant: 358
-        ).isActive = true
 
-        noteNameLabel.topAnchor.constraint(equalTo: shortCardView.topAnchor, constant: 10).isActive = true
-        noteNameLabel.leadingAnchor.constraint(equalTo: shortCardView.leadingAnchor, constant: 16).isActive = true
+        noteNameLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
+        noteNameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16).isActive = true
         noteNameLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
 
         noteTextLabel.topAnchor.constraint(equalTo: noteNameLabel.bottomAnchor, constant: 4).isActive = true
-        noteTextLabel.leadingAnchor.constraint(equalTo: shortCardView.leadingAnchor, constant: 16).isActive = true
+        noteTextLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16).isActive = true
         noteTextLabel.heightAnchor.constraint(equalToConstant: 14).isActive = true
-        noteTextLabel.trailingAnchor.constraint(equalTo: shortCardView.trailingAnchor, constant: -5).isActive = true
+        noteTextLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
 
         noteDateLabel.topAnchor.constraint(equalTo: noteTextLabel.bottomAnchor, constant: 24).isActive = true
-        noteDateLabel.leadingAnchor.constraint(equalTo: shortCardView.leadingAnchor, constant: 16).isActive = true
+        noteDateLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16).isActive = true
         noteDateLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
+    }
+
+    private func tapObserver() {
+        let tapGesture = UITapGestureRecognizer(
+            target: self,
+            action: #selector(didTapShortCard)
+        )
+        self.addGestureRecognizer(tapGesture)
     }
 
     @objc func didTapShortCard() {

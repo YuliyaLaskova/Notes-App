@@ -6,7 +6,6 @@
 //
 
 import UIKit
-// для таблиц оставить addnewbutton, noteDataModel
 
 class ListViewController: UIViewController {
     private let notesScrollView = UIScrollView()
@@ -52,13 +51,21 @@ class ListViewController: UIViewController {
 
         notesStackView.translatesAutoresizingMaskIntoConstraints = false
         notesStackView.topAnchor.constraint(
-            equalTo: notesScrollView.topAnchor
+            equalTo: notesScrollView.contentLayoutGuide.topAnchor
         ).isActive = true
         notesStackView.bottomAnchor.constraint(
-            equalTo: notesScrollView.bottomAnchor
+            equalTo: notesScrollView.contentLayoutGuide.bottomAnchor
+        ).isActive = true
+        notesStackView.leadingAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.leadingAnchor,
+            constant: 16
+        ).isActive = true
+        notesStackView.trailingAnchor.constraint(
+            equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+            constant: -16
         ).isActive = true
         notesStackView.widthAnchor.constraint(
-            equalTo: notesScrollView.widthAnchor
+            equalTo: notesScrollView.safeAreaLayoutGuide.widthAnchor
         ).isActive = true
     }
 
@@ -91,7 +98,6 @@ class ListViewController: UIViewController {
     }
 
     // MARK: Functions and methods
-
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
         editItem = nil
         let noteDetailsController = NoteDetailsViewController()
@@ -123,7 +129,6 @@ class ListViewController: UIViewController {
 }
 
 // MARK: Protocol extension
-
 extension ListViewController: NotesSendingDelegateProtocol {
     func sendDatatoFirstViewController(note: NoteDataModel) {
         guard !note.isNoteEmpty else { return }
