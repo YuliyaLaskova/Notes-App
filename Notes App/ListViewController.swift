@@ -12,10 +12,7 @@ class ListViewController: UIViewController {
     private let addNewNoteButton = UIButton()
     private var editItem: IndexPath?
     var notes = [NoteDataModel]()
-
-    struct Notes {
-        static let noteCell = "NoteCell"
-    }
+    private let noteCell = "NoteCell"
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +32,8 @@ class ListViewController: UIViewController {
         setTableViewDelegates()
         tableView.rowHeight = 90
         tableView.backgroundColor = .systemGray6
-        tableView.register(NoteCell.self, forCellReuseIdentifier: Notes.noteCell)
+        tableView.separatorStyle = .none
+        tableView.register(NoteCell.self, forCellReuseIdentifier: noteCell)
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -102,12 +100,11 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: Notes.noteCell) as! NoteCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: noteCell, for: indexPath)
+                as? NoteCell else { return UITableViewCell() }
+
         let note = notes[indexPath.row]
         cell.setup(with: note)
-        cell.backgroundColor = .white
-        cell.layer.cornerRadius = 8
-        cell.clipsToBounds = true
 
         return cell
     }
