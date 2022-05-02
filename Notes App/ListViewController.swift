@@ -10,7 +10,6 @@ import UIKit
 class ListViewController: UIViewController {
     private let tableView = UITableView()
     private let addNewNoteButton = UIButton()
-    private var editItem: IndexPath?
     var notes = [NoteDataModel]()
     private let noteCell = "NoteCell"
 
@@ -80,7 +79,6 @@ class ListViewController: UIViewController {
     }
 
     @objc func addNewNoteButtonPressed(_ sender: UIButton) {
-        editItem = nil
         showNoteDetailsViewController()
     }
 
@@ -110,9 +108,8 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let clickedNoteCell = notes[indexPath.row]
-        editItem = indexPath
-        showNoteDetailsViewController(for: clickedNoteCell)
+        let note = notes[indexPath.row].update(index: indexPath)
+        showNoteDetailsViewController(for: note)
     }
 }
 
@@ -121,7 +118,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 extension ListViewController: NotesSendingDelegateProtocol {
     func sendDatatoFirstViewController(note: NoteDataModel) {
         guard !note.isNoteEmpty else { return }
-        if let index = editItem?.row {
+        if let index = note.index?.row {
             notes[index] = note
         } else {
             notes.append(note)

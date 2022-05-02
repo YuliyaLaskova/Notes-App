@@ -17,6 +17,7 @@ class NoteDetailsViewController: UIViewController {
     private let noteTextView = UITextView()
     private let dateField = UITextField()
     private let datePicker = UIDatePicker()
+    private var index: IndexPath?
 
     weak var delegate: NotesSendingDelegateProtocol?
 
@@ -33,7 +34,8 @@ class NoteDetailsViewController: UIViewController {
             let noteCell = NoteDataModel(
                 noteTitle: titleTextField.text,
                 noteText: noteTextView.text,
-                noteDate: dateField.text
+                noteDate: dateField.text,
+                index: index
             )
             self.delegate?.sendDatatoFirstViewController(note: noteCell)
         }
@@ -179,6 +181,7 @@ class NoteDetailsViewController: UIViewController {
         titleTextField.text = model.noteTitle
         noteTextView.text = model.noteText
         dateField.text = model.noteDate
+        self.index = model.index
     }
 
     private func setupUI() {
