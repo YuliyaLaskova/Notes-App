@@ -1,75 +1,56 @@
 //
-//  ListViewController.swift
-//  Notes App
+//  ViewController.swift
+//  NotesViaTableView
 //
-//  Created by Yuliya Laskova on 08.04.2022.
+//  Created by Yuliya Laskova on 18.04.2022.
 //
 
 import UIKit
 
 class ListViewController: UIViewController {
-    private let notesScrollView = UIScrollView()
-    private let notesStackView = UIStackView()
+    private let tableView = UITableView()
     private let addNewNoteButton = UIButton()
-    private var shortCardViews: [ShortCardNoteView] = []
-    private var editItem: ShortCardNoteView?
+    var notes = [NoteDataModel]()
+    private let noteCell = "NoteCell"
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         navigationItem.title = "Заметки"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
-        setupUI()
+        view.backgroundColor = .systemGray6
+
+        configureTableView()
+        setupAddNewNoteButton()
     }
 
-    private func setupNotesScrollView() {
-        notesScrollView.alwaysBounceVertical = true
-        view.addSubview(notesScrollView)
+    // MARK: TableView configuration
 
-        notesScrollView.backgroundColor = .systemGray6
-        notesScrollView.translatesAutoresizingMaskIntoConstraints = false
-        notesScrollView.leadingAnchor.constraint(
-            equalTo: view.leadingAnchor
-        ).isActive = true
-        notesScrollView.trailingAnchor.constraint(
-            equalTo: view.trailingAnchor
-        ).isActive = true
-        notesScrollView.topAnchor.constraint(
-            equalTo: view.topAnchor
-        ).isActive = true
-        notesScrollView.bottomAnchor.constraint(
-            equalTo: view.bottomAnchor
-        ).isActive = true
+    private func configureTableView() {
+        view.addSubview(tableView)
+        setTableViewDelegates()
+        tableView.rowHeight = 90
+        tableView.backgroundColor = .systemGray6
+        tableView.separatorStyle = .none
+        tableView.register(NoteCell.self, forCellReuseIdentifier: noteCell)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
+        tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
 
-    private  func setupNotesSteakView() {
-        notesStackView.isUserInteractionEnabled = true
-        notesScrollView.addSubview(notesStackView)
-
-        notesStackView.axis = .vertical
-        notesStackView.spacing = 4
-        notesStackView.backgroundColor = .systemGray6
-
-        notesStackView.translatesAutoresizingMaskIntoConstraints = false
-        notesStackView.topAnchor.constraint(
-            equalTo: notesScrollView.contentLayoutGuide.topAnchor
-        ).isActive = true
-        notesStackView.bottomAnchor.constraint(
-            equalTo: notesScrollView.contentLayoutGuide.bottomAnchor
-        ).isActive = true
-        notesStackView.leadingAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.leadingAnchor,
-            constant: 16
-        ).isActive = true
-        notesStackView.trailingAnchor.constraint(
-            equalTo: view.safeAreaLayoutGuide.trailingAnchor,
-            constant: -16
-        ).isActive = true
-        notesStackView.widthAnchor.constraint(
-            equalTo: notesScrollView.safeAreaLayoutGuide.widthAnchor
-        ).isActive = true
+    private func setTableViewDelegates() {
+        tableView.delegate   = self
+        tableView.dataSource = self
     }
+
+    // MARK: AddNewNoteButton configuration
 
     private func setupAddNewNoteButton() {
+        view.addSubview(addNewNoteButton)
+
         addNewNoteButton.layer.cornerRadius = 25
         addNewNoteButton.setTitle("+", for: .normal)
         addNewNoteButton.setTitleColor(.white, for: .normal)
@@ -77,8 +58,6 @@ class ListViewController: UIViewController {
         addNewNoteButton.backgroundColor = .systemBlue
         addNewNoteButton.titleLabel?.font = .systemFont(ofSize: 36)
         addNewNoteButton.titleLabel?.textAlignment = .center
-
-        view.addSubview(addNewNoteButton)
 
         addNewNoteButton.translatesAutoresizingMaskIntoConstraints = false
         addNewNoteButton.trailingAnchor.constraint(
@@ -95,52 +74,55 @@ class ListViewController: UIViewController {
         addNewNoteButton.heightAnchor.constraint(
             equalToConstant: 50
         ).isActive = true
-    }
 
-    // MARK: Functions and methods
-    @objc func addNewNoteButtonPressed(_ sender: UIButton) {
-        editItem = nil
-        let noteDetailsController = NoteDetailsViewController()
-        noteDetailsController.delegate = self
-        navigationController?.pushViewController(noteDetailsController, animated: true)
-    }
-
-    func pushExistingNote(_ sender: NoteDataModel) {
-        let noteDetailsController = NoteDetailsViewController()
-        noteDetailsController.delegate = self
-        noteDetailsController.title = ""
-        noteDetailsController.set(note: sender)
-        navigationController?.pushViewController(noteDetailsController, animated: true)
-    }
-
-    private func setupUI() {
-        view.backgroundColor = .systemGray6
         addNewNoteButton.addTarget(self, action: #selector(addNewNoteButtonPressed), for: .touchUpInside)
-
-        setupNotesScrollView()
-        setupNotesSteakView()
-        setupAddNewNoteButton()
     }
 
-    private func updateStackView() {
-        notesStackView.arrangedSubviews.forEach({ notesStackView.removeArrangedSubview($0) })
-        shortCardViews.forEach({ notesStackView.addArrangedSubview($0) })
+    @objc func addNewNoteButtonPressed(_ sender: UIButton) {
+        showNoteDetailsViewController()
+    }
+
+    private func showNoteDetailsViewController(for note: NoteDataModel? = nil) {
+        let noteDetailsController = NoteDetailsViewController()
+        noteDetailsController.delegate = self
+        noteDetailsController.set(note: note)
+        navigationController?.pushViewController(noteDetailsController, animated: true)
     }
 }
 
-// MARK: Protocol extension
+// MARK: TableView extentions
+
+extension ListViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return notes.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: noteCell, for: indexPath)
+                as? NoteCell else { return UITableViewCell() }
+
+        let note = notes[indexPath.row]
+        cell.setup(with: note)
+
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let note = notes[indexPath.row].update(index: indexPath)
+        showNoteDetailsViewController(for: note)
+    }
+}
+
+// MARK: NotesSendingDelegateProtocol extension
+
 extension ListViewController: NotesSendingDelegateProtocol {
     func sendDatatoFirstViewController(note: NoteDataModel) {
         guard !note.isNoteEmpty else { return }
-        if let editView = editItem {
-            editView.update(with: note)
+        if let index = note.index?.row {
+            notes[index] = note
         } else {
-            let shortCard = ShortCardNoteView(note: note) { [weak self] (model, current) in
-                self?.pushExistingNote(model)
-                self?.editItem = current
-            }
-            shortCardViews.append(shortCard)
-            updateStackView()
+            notes.append(note)
         }
+        tableView.reloadData()
     }
 }

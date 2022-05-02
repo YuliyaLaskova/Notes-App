@@ -12,8 +12,14 @@ struct NoteDataModel: Codable {
     let noteTitle: String?
     let noteText: String?
     let noteDate: String?
+    var index: IndexPath?
 
     var isNoteEmpty: Bool {
         noteTitle == "" && noteText == ""
+    }
+
+    mutating func update(index: IndexPath?) -> NoteDataModel {
+        self.index = index
+        return self
     }
 }
