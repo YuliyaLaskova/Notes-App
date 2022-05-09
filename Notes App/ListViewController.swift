@@ -9,41 +9,79 @@ import UIKit
 
 class ListViewController: UIViewController {
     private let tableView = UITableView()
-    private let addNewNoteButton = UIButton()
-    private let deleteNoteButton = UIButton()
-    private var selectRightBarButtonItem = UIBarButtonItem()
-    private var readyRightBarButtonItem = UIBarButtonItem()
+    private let plusButton = UIButton()
+    private let deleteButton = UIButton()
+    var plusButtonBottomAnchor: NSLayoutConstraint!
 
     var notes = [NoteDataModel]()
     private let noteCell = "NoteCell"
 
+    override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
+        plusButtonBottomAnchor?.isActive = true
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        showPlusButtonWithAnimation()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.title = "Заметки"
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         view.backgroundColor = .systemGray6
 
-        selectRightBarButtonItem = UIBarButtonItem(title: "Выбрать", style: .plain, target: self, action: #selector(enterEditingMode))
-        readyRightBarButtonItem = UIBarButtonItem(title: "Готово", style: .done, target: self, action: #selector(cancelEditingMode))
-        navigationItem.rightBarButtonItems = [selectRightBarButtonItem]
-
-        tableView.allowsMultipleSelectionDuringEditing = true
-
+        setupNavBar()
         configureTableView()
-        setupAddNewNoteButton()
+        setupPlusButton()
     }
 
-    @objc func enterEditingMode() {
-        navigationItem.rightBarButtonItems = [readyRightBarButtonItem]
-        setupDeleteNoteButton()
-        setEditing(true, animated: true)
+    private func setupNavBar() {
+        navigationItem.title = "Заметки"
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "Выбрать",
+            style: .plain,
+            target: self,
+            action: #selector(updateSelectButton)
+        )
     }
 
-    @objc func cancelEditingMode() {
-        navigationItem.rightBarButtonItems = [selectRightBarButtonItem]
-        setupAddNewNoteButton()
-        setEditing(false, animated: true)
+    @objc func updateSelectButton () {
+        if !tableView.isEditing {
+            enterEditingMode()
+        } else {
+            cancelEditingMode()
+        }
+    }
+
+    // MARK: animations for changing button state
+
+    private  func enterEditingMode() {
+        tableView.setEditing(true, animated: true)
+        UIView.transition(
+            with: plusButton,
+            duration: 0.5,
+            options: .transitionFlipFromLeft
+        ) {
+            self.plusButton.setImage(UIImage(named: "trushbutton"), for: .normal)
+        } completion: { _ in
+            self.navigationItem.rightBarButtonItem?.title = "Готово"
+        }
+    }
+
+    private func cancelEditingMode() {
+        tableView.setEditing(false, animated: true)
+        UIView.transition(
+            with: plusButton,
+            duration: 0.5,
+            options: .transitionFlipFromLeft
+        ) {
+            self.plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
+            self.tableView.isEditing = false
+        } completion: { _ in
+            self.navigationItem.rightBarButtonItem?.title = "Выбрать"
+        }
     }
 
     // MARK: TableView configuration
@@ -70,67 +108,90 @@ class ListViewController: UIViewController {
 
     // MARK: AddNewNoteButton configuration
 
-    private func setupAddNewNoteButton() {
-        view.addSubview(addNewNoteButton)
+    private func setupPlusButton() {
+        view.addSubview(plusButton)
+        plusButton.layer.cornerRadius = 25
+        plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
 
-        let buttonImage = UIImage(named: "plusbutton")
-        addNewNoteButton.setImage(buttonImage, for: .normal)
-        addNewNoteButton.layer.cornerRadius = 25
-
-        addNewNoteButton.translatesAutoresizingMaskIntoConstraints = false
-        addNewNoteButton.trailingAnchor.constraint(
+        plusButton.translatesAutoresizingMaskIntoConstraints = false
+        plusButton.trailingAnchor.constraint(
             equalTo: view.trailingAnchor, constant: -20
         ).isActive = true
-        addNewNoteButton.bottomAnchor.constraint(
-            equalTo: view.bottomAnchor,
-            constant: -60
-        ).isActive = true
-        addNewNoteButton.widthAnchor.constraint(
+        plusButton.widthAnchor.constraint(
             equalToConstant: 50
         )
         .isActive = true
-        addNewNoteButton.heightAnchor.constraint(
+        plusButton.heightAnchor.constraint(
             equalToConstant: 50
         ).isActive = true
 
-        addNewNoteButton.addTarget(self, action: #selector(addNewNoteButtonPressed), for: .touchUpInside)
-    }
-
-    @objc func addNewNoteButtonPressed(_ sender: UIButton) {
-        showNoteDetailsViewController()
-    }
-
-    // MARK: DeleteNoteButton configuration
-
-    private func setupDeleteNoteButton() {
-        view.addSubview(deleteNoteButton)
-
-        let buttonImage = UIImage(named: "trushbutton")
-        deleteNoteButton.setImage(buttonImage, for: .normal)
-        deleteNoteButton.layer.cornerRadius = 25
-
-        deleteNoteButton.translatesAutoresizingMaskIntoConstraints = false
-        deleteNoteButton.trailingAnchor.constraint(
-            equalTo: view.trailingAnchor, constant: -20
-        ).isActive = true
-        deleteNoteButton.bottomAnchor.constraint(
+        plusButtonBottomAnchor = plusButton.bottomAnchor.constraint(
             equalTo: view.bottomAnchor,
-            constant: -60
-        ).isActive = true
-        deleteNoteButton.widthAnchor.constraint(
-            equalToConstant: 50
+            constant: 100
         )
-        .isActive = true
-        deleteNoteButton.heightAnchor.constraint(
-            equalToConstant: 50
-        ).isActive = true
+        plusButtonBottomAnchor?.isActive = true
+        self.view.addConstraint(plusButtonBottomAnchor)
 
-        deleteNoteButton.addTarget(self, action: #selector(deleteNoteButtonPressed), for: .touchUpInside)
+        plusButton.addTarget(self, action: #selector(plusButtonPressed), for: .touchUpInside)
     }
 
-    @objc func deleteNoteButtonPressed(_ sender: UIButton) {
+    @objc func plusButtonPressed(_ sender: UIButton) {
+        // showNoteDetailsViewController()
+        tapPlusButtonWithAnimation()
     }
 
+    // MARK: Animation to show plusbutton
+
+    // срабатывает только при первой загрузке приложения
+
+    private func showPlusButtonWithAnimation() {
+        UIView.animate(
+            withDuration: 1,
+            delay: 0,
+            usingSpringWithDamping: 0.2,
+            initialSpringVelocity: 4,
+            options: []
+        ) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self.plusButtonBottomAnchor?.isActive = false
+            self.plusButton.bottomAnchor.constraint(
+                equalTo: self.view.bottomAnchor,
+                constant: -60
+            ).isActive = true
+            self.view.layoutSubviews()
+        }
+    }
+
+    // MARK: Animation when tap PlusButton
+
+    func tapPlusButtonWithAnimation() {
+        UIView.animateKeyframes(
+            withDuration: 0.6,
+            delay: 0.0,
+            options: [.layoutSubviews],
+            animations: {
+                UIView.addKeyframe(
+                    withRelativeStartTime: 0.0,
+                    relativeDuration: 0.30,
+                    animations: {
+                        self.plusButton.center.y -= 50.0
+                    }
+                )
+                UIView.addKeyframe(
+                    withRelativeStartTime: 0.35,
+                    relativeDuration: 0.75,
+                    animations: {
+                        self.plusButton.center.y += 200.0
+                    }
+                )
+            },
+            completion: { _ in
+                self.showNoteDetailsViewController()
+            }
+        )
+    }
     // MARK: func showNoteDetailsViewController
 
     private func showNoteDetailsViewController(for note: NoteDataModel? = nil) {
@@ -164,30 +225,12 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // remove the item from the data model
+            tableView.beginUpdates()
             notes.remove(at: indexPath.row)
-
-            // delete the table view row
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            tableView.deleteRows(at: [indexPath], with: .left)
+            tableView.endUpdates()
         }
     }
-
-    //    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    //        if tableView.isEditing {
-    //            setupDeleteNoteButton()
-    //        } else {
-    //            let note = notes[indexPath.row].update(index: indexPath)
-    //            showNoteDetailsViewController(for: note)
-    //        }
-    //    }
-    //
-    //    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-    //        if tableView.isEditing {
-    //            if tableView.indexPathsForSelectedRows == nil || tableView.indexPathsForSelectedRows!.isEmpty {
-    //                setupAddNewNoteButton()
-    //            }
-    //        }
-    //    }
 }
 
 // MARK: NotesSendingDelegateProtocol extension
