@@ -10,8 +10,8 @@ import UIKit
 class ListViewController: UIViewController {
     private let tableView = UITableView()
     private let plusButton = UIButton()
-    private let deleteButton = UIButton()
     var plusButtonBottomAnchor: NSLayoutConstraint!
+    var plusButtonBottomAnchor2: NSLayoutConstraint!
     private let cellHeight = 90.0
 
     var notes = [NoteDataModel]()
@@ -19,6 +19,11 @@ class ListViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
+        plusButtonBottomAnchor2?.isActive = false
+        plusButtonBottomAnchor = plusButton.bottomAnchor.constraint(
+            equalTo: view.bottomAnchor,
+            constant: 100
+        )
         plusButtonBottomAnchor?.isActive = true
         view.layoutIfNeeded()
     }
@@ -73,7 +78,7 @@ class ListViewController: UIViewController {
             animations: { [weak self] in
                 guard let self = self else { return }
                 self.plusButton.setImage(UIImage(named: "trushbutton"), for: .normal)
-            }, completion: nil
+            }
         )
     }
 
@@ -87,7 +92,7 @@ class ListViewController: UIViewController {
             animations: { [weak self] in
                 guard let self = self else { return }
                 self.plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
-            }, completion: nil
+            }
         )
     }
 
@@ -133,19 +138,10 @@ class ListViewController: UIViewController {
             equalToConstant: 50
         ).isActive = true
 
-        plusButtonBottomAnchor = plusButton.bottomAnchor.constraint(
-            equalTo: view.bottomAnchor,
-            constant: 100
-        )
-        plusButtonBottomAnchor?.isActive = true
-        self.view.addConstraint(plusButtonBottomAnchor)
-
         plusButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
     }
 
     // MARK: Animation to show plusbutton
-
-    // срабатывает только при первой загрузке приложения
 
     private func showPlusButtonWithAnimation() {
         UIView.animate(
@@ -157,10 +153,11 @@ class ListViewController: UIViewController {
             animations: { [weak self] in
                 guard let self = self else { return }
                 self.plusButtonBottomAnchor?.isActive = false
-                self.plusButton.bottomAnchor.constraint(
+                self.plusButtonBottomAnchor2 = self.plusButton.bottomAnchor.constraint(
                     equalTo: self.view.bottomAnchor,
                     constant: -60
-                ).isActive = true
+                )
+                self.plusButtonBottomAnchor2.isActive = true
                 self.view.layoutSubviews()
             },
             completion: nil
@@ -174,7 +171,8 @@ class ListViewController: UIViewController {
                 animations: { [weak self] in
                     guard let self = self else { return }
                     self.deleteButtonPressed()
-                }, completion: { [weak self] _ in
+                },
+                completion: { [weak self] _ in
                     guard let self = self else { return }
                     self.tableView.reloadData()
                 }

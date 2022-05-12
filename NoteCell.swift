@@ -14,7 +14,7 @@ final class NoteCell: UITableViewCell {
     private let noteViewCell = UIView()
     private let noteTitleLabel = UILabel()
     private let noteTextLabel = UILabel()
-    private let noteDateLabel = UITextField()
+    private let noteDateLabel = UILabel()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
