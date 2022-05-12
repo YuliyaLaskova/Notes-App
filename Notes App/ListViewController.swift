@@ -19,6 +19,7 @@ class ListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
         plusButtonBottomAnchor?.isActive = true
+        view.layoutSubviews()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -30,7 +31,7 @@ class ListViewController: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemGray6
-
+        notes = fetchData()
         setupNavBar()
         configureTableView()
         setupPlusButton()
@@ -59,29 +60,30 @@ class ListViewController: UIViewController {
 
     private  func enterEditingMode() {
         tableView.setEditing(true, animated: true)
+        self.navigationItem.rightBarButtonItem?.title = "Готово"
         UIView.transition(
             with: plusButton,
             duration: 0.5,
-            options: .transitionFlipFromLeft
-        ) {
-            self.plusButton.setImage(UIImage(named: "trushbutton"), for: .normal)
-        } completion: { _ in
-            self.navigationItem.rightBarButtonItem?.title = "Готово"
-        }
+            options: .transitionFlipFromLeft,
+            animations: { [weak self] in
+                guard let self = self else { return }
+                self.plusButton.setImage(UIImage(named: "trushbutton"), for: .normal)
+            }, completion: nil
+        )
     }
 
     private func cancelEditingMode() {
         tableView.setEditing(false, animated: true)
+        self.navigationItem.rightBarButtonItem?.title = "Выбрать"
         UIView.transition(
             with: plusButton,
             duration: 0.5,
-            options: .transitionFlipFromLeft
-        ) {
-            self.plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
-            self.tableView.isEditing = false
-        } completion: { _ in
-            self.navigationItem.rightBarButtonItem?.title = "Выбрать"
-        }
+            options: .transitionFlipFromLeft,
+            animations: { [weak self] in
+                guard let self = self else { return }
+                self.plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
+            }, completion: nil
+        )
     }
 
     // MARK: TableView configuration
@@ -93,6 +95,7 @@ class ListViewController: UIViewController {
         tableView.backgroundColor = .systemGray6
         tableView.separatorStyle = .none
         tableView.register(NoteCell.self, forCellReuseIdentifier: noteCell)
+        tableView.allowsMultipleSelectionDuringEditing = true
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -132,12 +135,7 @@ class ListViewController: UIViewController {
         plusButtonBottomAnchor?.isActive = true
         self.view.addConstraint(plusButtonBottomAnchor)
 
-        plusButton.addTarget(self, action: #selector(plusButtonPressed), for: .touchUpInside)
-    }
-
-    @objc func plusButtonPressed(_ sender: UIButton) {
-        // showNoteDetailsViewController()
-        tapPlusButtonWithAnimation()
+        plusButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
     }
 
     // MARK: Animation to show plusbutton
@@ -150,17 +148,34 @@ class ListViewController: UIViewController {
             delay: 0,
             usingSpringWithDamping: 0.2,
             initialSpringVelocity: 4,
-            options: []
-        ) { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.plusButtonBottomAnchor?.isActive = false
-            self.plusButton.bottomAnchor.constraint(
-                equalTo: self.view.bottomAnchor,
-                constant: -60
-            ).isActive = true
-            self.view.layoutSubviews()
+            options: [.layoutSubviews],
+            animations: { [weak self] in
+                guard let self = self else { return }
+                self.plusButtonBottomAnchor?.isActive = false
+                self.plusButton.bottomAnchor.constraint(
+                    equalTo: self.view.bottomAnchor,
+                    constant: -60
+                ).isActive = true
+                self.view.layoutSubviews()
+            },
+            completion: nil
+        )
+    }
+
+    @objc private func buttonPressed(_ sender: Any) {
+        if tableView.isEditing {
+            UIView.animate(
+                withDuration: 1,
+                animations: { [weak self] in
+                    guard let self = self else { return }
+                    self.deleteButtonPressed()
+                }, completion: { [weak self] _ in
+                    guard let self = self else { return }
+                    self.tableView.reloadData()
+                }
+            )
+        } else {
+            tapPlusButtonWithAnimation()
         }
     }
 
@@ -200,6 +215,23 @@ class ListViewController: UIViewController {
         noteDetailsController.set(note: note)
         navigationController?.pushViewController(noteDetailsController, animated: true)
     }
+
+    // MARK: delete functions
+
+    @objc func deleteButtonPressed() {
+        let selectedRows = self.tableView.indexPathsForSelectedRows
+        if selectedRows != nil {
+            for var selectionIndex in selectedRows! {
+                while selectionIndex.item >= notes.count {
+                    selectionIndex.item -= 1
+                }
+                tableView(tableView, commit: .delete, forRowAt: selectionIndex)
+            }
+            cancelEditingMode()
+        } else {
+            showAlert(message: "Вы не выбрали ни одной заметки", title: "Ошибка")
+        }
+    }
 }
 
 // MARK: TableView extentions
@@ -215,15 +247,23 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
         let note = notes[indexPath.row]
         cell.setup(with: note)
+        //  check marks color in editing mode
+        // cell.tintColor = .blu
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let note = notes[indexPath.row].update(index: indexPath)
-        showNoteDetailsViewController(for: note)
+        if tableView.isEditing == false {
+            showNoteDetailsViewController(for: note)
+        }
     }
 
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    func tableView(
+        _ tableView: UITableView,
+        commit editingStyle: UITableViewCell.EditingStyle,
+        forRowAt indexPath: IndexPath
+    ) {
         if editingStyle == .delete {
             tableView.beginUpdates()
             notes.remove(at: indexPath.row)
@@ -244,5 +284,27 @@ extension ListViewController: NotesSendingDelegateProtocol {
             notes.append(note)
         }
         tableView.reloadData()
+    }
+}
+
+// MARK: delete alert extension
+
+extension ListViewController {
+    private func showAlert(message: String, title: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        alertController.addAction(okAction)
+        present(alertController, animated: true)
+    }
+}
+
+extension ListViewController {
+    func fetchData() -> [NoteDataModel] {
+        let note0 = NoteDataModel(noteTitle: "title 0", noteText: "Text 0", noteDate: "Date 0")
+        let note1 = NoteDataModel(noteTitle: "title 1", noteText: "Text 1", noteDate: "Date 1")
+        let note2 = NoteDataModel(noteTitle: "title 2", noteText: "Text 2", noteDate: "Date 2")
+        let note3 = NoteDataModel(noteTitle: "title 3", noteText: "Text 3", noteDate: "Date 3")
+
+        return [note0, note1, note2, note3]
     }
 }
