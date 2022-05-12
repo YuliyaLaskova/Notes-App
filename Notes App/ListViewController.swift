@@ -12,6 +12,7 @@ class ListViewController: UIViewController {
     private let plusButton = UIButton()
     private let deleteButton = UIButton()
     var plusButtonBottomAnchor: NSLayoutConstraint!
+    private let cellHeight = 90.0
 
     var notes = [NoteDataModel]()
     private let noteCell = "NoteCell"
@@ -19,12 +20,16 @@ class ListViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
         plusButtonBottomAnchor?.isActive = true
-        view.layoutSubviews()
+        view.layoutIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         showPlusButtonWithAnimation()
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
     }
 
     override func viewDidLoad() {
@@ -91,7 +96,7 @@ class ListViewController: UIViewController {
     private func configureTableView() {
         view.addSubview(tableView)
         setTableViewDelegates()
-        tableView.rowHeight = 90
+        tableView.rowHeight = cellHeight
         tableView.backgroundColor = .systemGray6
         tableView.separatorStyle = .none
         tableView.register(NoteCell.self, forCellReuseIdentifier: noteCell)
@@ -219,9 +224,8 @@ class ListViewController: UIViewController {
     // MARK: delete functions
 
     @objc func deleteButtonPressed() {
-        let selectedRows = self.tableView.indexPathsForSelectedRows
-        if selectedRows != nil {
-            for var selectionIndex in selectedRows! {
+        if let selectedRows = self.tableView.indexPathsForSelectedRows, !(selectedRows.isEmpty) {
+            for var selectionIndex in selectedRows {
                 while selectionIndex.item >= notes.count {
                     selectionIndex.item -= 1
                 }
@@ -247,8 +251,6 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
         let note = notes[indexPath.row]
         cell.setup(with: note)
-        //  check marks color in editing mode
-        // cell.tintColor = .blu
         return cell
     }
 
