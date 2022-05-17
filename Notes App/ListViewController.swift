@@ -42,6 +42,7 @@ class ListViewController: UIViewController {
 
         view.backgroundColor = .systemGray6
         notes = fetchData()
+        getNotes()
         setupNavBar()
         configureTableView()
         setupPlusButton()
@@ -298,6 +299,8 @@ extension ListViewController {
     }
 }
 
+// MARK: fetchData extension
+
 extension ListViewController {
     func fetchData() -> [NoteDataModel] {
         let note0 = NoteDataModel(noteTitle: "title 0", noteText: "Text 0", noteDate: "Date 0")
@@ -306,5 +309,16 @@ extension ListViewController {
         let note3 = NoteDataModel(noteTitle: "title 3", noteText: "Text 3", noteDate: "Date 3")
 
         return [note0, note1, note2, note3]
+    }
+}
+
+extension ListViewController {
+    func getNotes() {
+        let worker = Worker()
+        worker.fetchNotes(completion: { [weak self] result in
+            self?.notes.append(contentsOf: result)
+            self?.tableView.reloadData()
+        }
+        )
     }
 }
