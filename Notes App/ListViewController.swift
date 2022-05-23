@@ -54,44 +54,21 @@ class ListViewController: UIViewController {
             title: "Выбрать",
             style: .plain,
             target: self,
-            action: #selector(updateSelectButton)
+            action: #selector(toggleTableEditingMode)
         )
     }
 
-    @objc func updateSelectButton () {
-        if !tableView.isEditing {
-            enterEditingMode()
-        } else {
-            cancelEditingMode()
-        }
-    }
-
-    // MARK: animations for changing button state
-
-    private  func enterEditingMode() {
-        tableView.setEditing(true, animated: true)
-        self.navigationItem.rightBarButtonItem?.title = "Готово"
+    @objc func toggleTableEditingMode() {
+        tableView.setEditing(!tableView.isEditing, animated: true)
+        let isEdit = tableView.isEditing
+        self.navigationItem.rightBarButtonItem?.title = isEdit ? "Готово" : "Выбрать"
         UIView.transition(
             with: plusButton,
             duration: 0.5,
             options: .transitionFlipFromLeft,
             animations: { [weak self] in
                 guard let self = self else { return }
-                self.plusButton.setImage(UIImage(named: "trushbutton"), for: .normal)
-            }
-        )
-    }
-
-    private func cancelEditingMode() {
-        tableView.setEditing(false, animated: true)
-        self.navigationItem.rightBarButtonItem?.title = "Выбрать"
-        UIView.transition(
-            with: plusButton,
-            duration: 0.5,
-            options: .transitionFlipFromLeft,
-            animations: { [weak self] in
-                guard let self = self else { return }
-                self.plusButton.setImage(UIImage(named: "plusbutton"), for: .normal)
+                self.plusButton.setImage(UIImage(named: isEdit ? "trushbutton" : "plusbutton"), for: .normal)
             }
         )
     }
@@ -229,7 +206,7 @@ class ListViewController: UIViewController {
                 }
                 tableView(tableView, commit: .delete, forRowAt: selectionIndex)
             }
-            cancelEditingMode()
+            toggleTableEditingMode()
         } else {
             showAlert(message: "Вы не выбрали ни одной заметки", title: "Ошибка")
         }
