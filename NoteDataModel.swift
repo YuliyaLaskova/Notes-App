@@ -23,3 +23,17 @@ struct NoteDataModel: Codable {
         return self
     }
 }
+
+struct Note: Decodable {
+    let header: String?
+    let text: String?
+    let date: Int?
+
+    var dataModel: NoteDataModel {
+        NoteDataModel(
+            noteTitle: header,
+            noteText: text,
+            noteDate: DateTimeManager.formatDate(
+                date: date == nil ? Date() : Date(timeIntervalSince1970: TimeInterval(date!))))
+    }
+}

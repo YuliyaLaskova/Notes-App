@@ -14,7 +14,11 @@ class ListViewController: UIViewController {
     var plusButtonBottomAnchor2: NSLayoutConstraint!
     private let cellHeight = 90.0
 
-    var notes = [NoteDataModel]()
+    var notes = [NoteDataModel]() {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     private let noteCell = "NoteCell"
 
     override func viewWillAppear(_ animated: Bool) {
@@ -310,10 +314,9 @@ extension ListViewController {
 
 extension ListViewController {
     func getNotes() {
-        let worker = Worker()
+        let worker: WorkerType = Worker()
         worker.fetchNotes(completion: { [weak self] result in
             self?.notes.append(contentsOf: result)
-            self?.tableView.reloadData()
         }
         )
     }

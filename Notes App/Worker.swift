@@ -13,43 +13,35 @@ protocol WorkerType {
 }
 
 class Worker: WorkerType {
-    let session: URLSession
-
-    init(session: URLSession = URLSession(configuration: .default)) {
-        self.session = session
-    }
+    internal lazy var session: URLSession = {
+        URLSession.shared
+    }()
 
     func fetchNotes(completion: @escaping ([NoteDataModel]) -> Void) {
-        let task = session.dataTask(with: createURLRequest()) { data, response, error in
+        guard let request = createURLRequest() else { completion([]); return }
+        let task = session.dataTask(with: request) { data, _, error in
             guard let data = data else { return }
             do {
                 let responses = try JSONDecoder().decode([Note].self, from: data)
-                for response in responses {
-                    var notes = [NoteDataModel]()
-                    let note = NoteDataModel(
-                        noteTitle: response.header,
-                        noteText: response.text,
-                        noteDate: self.formatDate(date: Date())
-                    )
-                    notes.append(note)
                     DispatchQueue.main.async {
-                        completion(notes)
+                        completion(responses.map { $0.dataModel })
                     }
-                }
             } catch {
                 print(error.localizedDescription)
+                completion([])
             }
         }
         task.resume()
     }
 
-    private func createURLRequest() -> URLRequest {
-        var request = URLRequest(url: createURLComponents()!)
+    private func createURLRequest() -> URLRequest? {
+        guard let url = createURLWithComponents() else { return nil }
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
         return request
     }
 
-    private func createURLComponents() -> URL? {
+    private func createURLWithComponents() -> URL? {
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
         urlComponents.host = "firebasestorage.googleapis.com"
@@ -59,20 +51,5 @@ class Worker: WorkerType {
             URLQueryItem(name: "token", value: "d07f7d4a-141e-4ac5-a2d2-cc936d4e6f18")
         ]
         return urlComponents.url
-    }
-}
-
-struct Note: Decodable {
-    var header: String?
-    var text: String?
-    var date: Int?
-}
-
-extension Worker {
-    private func formatDate(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "dd.MM.YYYY EEEE HH:mm"
-        return formatter.string(from: date)
     }
 }
