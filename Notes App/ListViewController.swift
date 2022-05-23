@@ -172,10 +172,6 @@ class ListViewController: UIViewController {
                 animations: { [weak self] in
                     guard let self = self else { return }
                     self.deleteButtonPressed()
-                },
-                completion: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.tableView.reloadData()
                 }
             )
         } else {
@@ -255,7 +251,7 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let note = notes[indexPath.row].update(index: indexPath)
-        if tableView.isEditing == false {
+        if !tableView.isEditing {
             showNoteDetailsViewController(for: note)
         }
     }

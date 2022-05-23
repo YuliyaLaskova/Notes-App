@@ -16,7 +16,6 @@ class NoteDetailsViewController: UIViewController {
     private let titleTextField = UITextField()
     private let noteTextView = UITextView()
     private let dateField = UITextField()
-    private let datePicker = UIDatePicker()
     private var index: IndexPath?
 
     weak var delegate: NotesSendingDelegateProtocol?
