@@ -34,7 +34,8 @@ class NoteDetailsViewController: UIViewController {
                 noteTitle: titleTextField.text,
                 noteText: noteTextView.text,
                 noteDate: dateField.text,
-                index: index
+                index: index,
+                userIcon: nil
             )
             self.delegate?.sendDatatoFirstViewController(note: noteCell)
         }

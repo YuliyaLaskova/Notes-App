@@ -18,6 +18,8 @@
 		8CB27C5427F1E3FC00B50D70 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CB27C5327F1E3FC00B50D70 /* Assets.xcassets */; };
 		8CB27C5727F1E3FC00B50D70 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8CB27C5527F1E3FC00B50D70 /* LaunchScreen.storyboard */; };
 		8CDA3E49281AAE3C004E42DE /* NoteCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDA3E48281AAE3C004E42DE /* NoteCell.swift */; };
+		8CF17E4F2844EA3300E861CE /* NetManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF17E4E2844EA3300E861CE /* NetManager.swift */; };
+		8CF17E522844F1FE00E861CE /* Date+adds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CF17E512844F1FE00E861CE /* Date+adds.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		8CB27C5627F1E3FC00B50D70 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8CB27C5827F1E3FC00B50D70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8CDA3E48281AAE3C004E42DE /* NoteCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteCell.swift; sourceTree = "<group>"; };
+		8CF17E4E2844EA3300E861CE /* NetManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetManager.swift; sourceTree = "<group>"; };
+		8CF17E512844F1FE00E861CE /* Date+adds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+adds.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +54,9 @@
 		8C36D27F283BCE26007236D7 /* Lib */ = {
 			isa = PBXGroup;
 			children = (
+				8CF17E502844F1A500E861CE /* Extentions */,
 				8C36D280283BCE46007236D7 /* DateTimeManager.swift */,
+				8CF17E4E2844EA3300E861CE /* NetManager.swift */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -88,6 +94,14 @@
 				8CB27C5027F1E3FB00B50D70 /* Notes_App.xcdatamodeld */,
 			);
 			path = "Notes App";
+			sourceTree = "<group>";
+		};
+		8CF17E502844F1A500E861CE /* Extentions */ = {
+			isa = PBXGroup;
+			children = (
+				8CF17E512844F1FE00E861CE /* Date+adds.swift */,
+			);
+			path = Extentions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,6 +198,8 @@
 				8CB27C4C27F1E3FB00B50D70 /* NoteDetailsViewController.swift in Sources */,
 				8C36D27E28325EE5007236D7 /* Worker.swift in Sources */,
 				8C11EBC72801FF130098EAC4 /* NoteDataModel.swift in Sources */,
+				8CF17E522844F1FE00E861CE /* Date+adds.swift in Sources */,
+				8CF17E4F2844EA3300E861CE /* NetManager.swift in Sources */,
 				8CB27C4827F1E3FB00B50D70 /* AppDelegate.swift in Sources */,
 				8CB27C4A27F1E3FB00B50D70 /* SceneDelegate.swift in Sources */,
 				8C11EBC5280083970098EAC4 /* ListViewController.swift in Sources */,

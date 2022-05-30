@@ -13,13 +13,16 @@ struct NoteDataModel: Codable {
     let noteText: String?
     let noteDate: String?
     var index: IndexPath?
+    let userIcon: String?
+    var isChecked: Bool = false
 
     var isNoteEmpty: Bool {
         noteTitle == "" && noteText == ""
     }
 
-    mutating func update(index: IndexPath?) -> NoteDataModel {
+    mutating func update(index: IndexPath?, isChecked: Bool) -> NoteDataModel {
         self.index = index
+        self.isChecked = isChecked
         return self
     }
 }
@@ -28,12 +31,13 @@ struct Note: Decodable {
     let header: String?
     let text: String?
     let date: Int?
+    let userShareIcon: String?
 
     var dataModel: NoteDataModel {
         NoteDataModel(
             noteTitle: header,
             noteText: text,
-            noteDate: DateTimeManager.formatDate(
-                date: date == nil ? Date() : Date(timeIntervalSince1970: TimeInterval(date!))))
+            noteDate: DateTimeManager.formatDate(date: Date(timeIntervalSince1970Optional: date)),
+            userIcon: userShareIcon)
     }
 }

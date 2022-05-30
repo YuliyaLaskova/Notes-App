@@ -15,6 +15,7 @@ final class NoteCell: UITableViewCell {
     private let noteTitleLabel = UILabel()
     private let noteTextLabel = UILabel()
     private let noteDateLabel = UILabel()
+    lazy var iconImageView = UIImageView()
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -32,6 +33,16 @@ final class NoteCell: UITableViewCell {
         noteTitleLabel.text = note.noteTitle
         noteTextLabel.text = note.noteText
         noteDateLabel.text = note.noteDate
+        if let userIconStr = note.userIcon {
+            loadUserImage(userIconStr: userIconStr)
+        }
+    }
+
+    private func loadUserImage(userIconStr: String) {
+        NetManager.shared.fetchUserIcon(userIconPath: userIconStr) { [weak self] image in
+            self?.iconImageView.image = image
+        }
+
     }
 
     private func setupUI() {
@@ -40,11 +51,13 @@ final class NoteCell: UITableViewCell {
         noteViewCell.addSubview(noteTitleLabel)
         noteViewCell.addSubview(noteTextLabel)
         noteViewCell.addSubview(noteDateLabel)
+        noteViewCell.addSubview(iconImageView)
 
         noteViewCell.translatesAutoresizingMaskIntoConstraints = false
         noteTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         noteTextLabel.translatesAutoresizingMaskIntoConstraints = false
         noteDateLabel.translatesAutoresizingMaskIntoConstraints = false
+        iconImageView.translatesAutoresizingMaskIntoConstraints = false
 
         noteViewCell.backgroundColor = .white
         noteViewCell.layer.cornerRadius = 14
@@ -77,5 +90,12 @@ final class NoteCell: UITableViewCell {
         noteDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
         noteDateLabel.heightAnchor.constraint(equalToConstant: 10).isActive = true
 
+        iconImageView.frame.size = CGSize(width: 24, height: 24)
+        iconImageView.layer.cornerRadius = iconImageView.frame.width / 2
+
+        iconImageView.trailingAnchor.constraint(equalTo: noteViewCell.trailingAnchor, constant: -16).isActive = true
+        iconImageView.bottomAnchor.constraint(equalTo: noteViewCell.bottomAnchor, constant: -10).isActive = true
+        iconImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        iconImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
     }
 }
