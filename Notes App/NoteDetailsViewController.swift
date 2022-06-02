@@ -16,7 +16,6 @@ class NoteDetailsViewController: UIViewController {
     private let titleTextField = UITextField()
     private let noteTextView = UITextView()
     private let dateField = UITextField()
-    private let datePicker = UIDatePicker()
     private var index: IndexPath?
 
     weak var delegate: NotesSendingDelegateProtocol?
@@ -92,7 +91,7 @@ class NoteDetailsViewController: UIViewController {
         dateField.textAlignment = .center
         dateField.font = .systemFont(ofSize: 14, weight: .medium)
         dateField.textColor = .gray
-        dateField.text = formatDate(date: Date())
+        dateField.text = DateTimeManager.formatDate()
         dateField.isUserInteractionEnabled = false
 
         view.addSubview(dateField)
@@ -262,16 +261,5 @@ extension UITextView {
 
         scrollIndicatorInsets = contentInset
         scrollRangeToVisible(selectedRange)
-    }
-}
-
-// MARK: date format extension
-
-extension NoteDetailsViewController {
-    private func formatDate(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.dateFormat = "dd.MM.YYYY EEEE HH:mm"
-        return formatter.string(from: date)
     }
 }

@@ -15,6 +15,8 @@ struct NoteDataModel: Codable {
     var index: IndexPath?
     var isChecked: Bool = false
 
+    var isChecked: Bool = false
+
     var isNoteEmpty: Bool {
         noteTitle == "" && noteText == ""
     }
@@ -23,5 +25,18 @@ struct NoteDataModel: Codable {
         self.index = index
         self.isChecked = isChecked
         return self
+    }
+}
+
+struct Note: Decodable {
+    let header: String?
+    let text: String?
+    let date: Int?
+
+    var dataModel: NoteDataModel {
+        NoteDataModel(
+            noteTitle: header,
+            noteText: text,
+            noteDate: DateTimeManager.formatDate(date: Date(timeIntervalSince1970Optional: date)))
     }
 }
