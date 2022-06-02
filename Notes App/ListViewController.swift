@@ -42,7 +42,6 @@ class ListViewController: UIViewController {
 
         view.backgroundColor = .systemGray6
         notes = fetchData()
-        getNotes()
         setupNavBar()
         configureTableView()
         setupPlusButton()
@@ -197,16 +196,19 @@ class ListViewController: UIViewController {
 
     @objc func deleteButtonPressed() {
         if let selectedRows = self.tableView.indexPathsForSelectedRows, !(selectedRows.isEmpty) {
-            for var selectionIndex in selectedRows {
-                while selectionIndex.item >= notes.count {
-                    selectionIndex.item -= 1
-                }
-                tableView(tableView, commit: .delete, forRowAt: selectionIndex)
+            for index in selectedRows {
+                _ = updateModel(index: index, isChecked: true)
             }
+            notes = notes.filter({ !$0.isChecked })
+            tableView.reloadData()
             toggleTableEditingMode()
         } else {
             showAlert(message: "Вы не выбрали ни одной заметки", title: "Ошибка")
         }
+    }
+
+    private func updateModel(index: IndexPath, isChecked: Bool) -> NoteDataModel {
+        notes[index.row].update(index: index, isChecked: isChecked)
     }
 }
 
@@ -221,28 +223,17 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: noteCell, for: indexPath)
                 as? NoteCell else { return UITableViewCell() }
 
-        let note = notes[indexPath.row]
+        let note = updateModel(index: indexPath, isChecked: cell.isSelected)
         cell.setup(with: note)
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let note = notes[indexPath.row].update(index: indexPath)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: noteCell, for: indexPath)
+                as? NoteCell else { return }
+        let note = updateModel(index: indexPath, isChecked: cell.isSelected)
         if !tableView.isEditing {
             showNoteDetailsViewController(for: note)
-        }
-    }
-
-    func tableView(
-        _ tableView: UITableView,
-        commit editingStyle: UITableViewCell.EditingStyle,
-        forRowAt indexPath: IndexPath
-    ) {
-        if editingStyle == .delete {
-            tableView.beginUpdates()
-            notes.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .left)
-            tableView.endUpdates()
         }
     }
 }
@@ -272,8 +263,6 @@ extension ListViewController {
     }
 }
 
-// MARK: fetchData extension
-
 extension ListViewController {
     func fetchData() -> [NoteDataModel] {
         let note0 = NoteDataModel(noteTitle: "title 0", noteText: "Text 0", noteDate: "Date 0")
@@ -282,16 +271,5 @@ extension ListViewController {
         let note3 = NoteDataModel(noteTitle: "title 3", noteText: "Text 3", noteDate: "Date 3")
 
         return [note0, note1, note2, note3]
-    }
-}
-
-extension ListViewController {
-    func getNotes() {
-        let worker: WorkerType = Worker()
-        worker.fetchNotes(completion: { [weak self] result in
-            self?.notes.append(contentsOf: result)
-            self?.tableView.reloadData()
-        }
-        )
     }
 }
