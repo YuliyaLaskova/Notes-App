@@ -197,10 +197,10 @@ class ListViewController: UIViewController {
     @objc func deleteButtonPressed() {
         if let selectedRows = self.tableView.indexPathsForSelectedRows, !(selectedRows.isEmpty) {
             for index in selectedRows {
-                            _ = updateModel(index: index, isChecked: true)
-                        }
-                        notes = notes.filter({ !$0.isChecked })
-                        tableView.reloadData()
+                _ = updateModel(index: index, isChecked: true)
+            }
+            notes = notes.filter({ !$0.isChecked })
+            tableView.reloadData()
             toggleTableEditingMode()
         } else {
             showAlert(message: "Вы не выбрали ни одной заметки", title: "Ошибка")
@@ -208,8 +208,8 @@ class ListViewController: UIViewController {
     }
 
     private func updateModel(index: IndexPath, isChecked: Bool) -> NoteDataModel {
-            notes[index.row].update(index: index, isChecked: isChecked)
-        }
+        notes[index.row].update(index: index, isChecked: isChecked)
+    }
 }
 
 // MARK: TableView extentions
@@ -230,11 +230,11 @@ extension ListViewController: UITableViewDelegate, UITableViewDataSource {
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: noteCell, for: indexPath)
-                        as? NoteCell else { return }
-                let note = updateModel(index: indexPath, isChecked: cell.isSelected)
-                if !tableView.isEditing {
-                    showNoteDetailsViewController(for: note)
-                }
+                as? NoteCell else { return }
+        let note = updateModel(index: indexPath, isChecked: cell.isSelected)
+        if !tableView.isEditing {
+            showNoteDetailsViewController(for: note)
+        }
     }
 }
 

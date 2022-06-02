@@ -20,8 +20,8 @@ struct NoteDataModel: Codable {
     }
 
     mutating func update(index: IndexPath?, isChecked: Bool) -> NoteDataModel {
-             self.index = index
-             self.isChecked = isChecked
-             return self
+        self.index = index
+        self.isChecked = isChecked
+        return self
     }
 }
