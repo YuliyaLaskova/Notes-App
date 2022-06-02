@@ -36,7 +36,6 @@ struct Note: Decodable {
         NoteDataModel(
             noteTitle: header,
             noteText: text,
-            noteDate: DateTimeManager.formatDate(
-                date: date == nil ? Date() : Date(timeIntervalSince1970: TimeInterval(date!))))
+            noteDate: DateTimeManager.formatDate(date: Date(timeIntervalSince1970Optional: date)))
     }
 }
