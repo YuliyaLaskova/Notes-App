@@ -148,10 +148,6 @@ class ListViewController: UIViewController {
                 animations: { [weak self] in
                     guard let self = self else { return }
                     self.deleteButtonPressed()
-                },
-                completion: { [weak self] _ in
-                    guard let self = self else { return }
-                    self.tableView.reloadData()
                 }
             )
         } else {
